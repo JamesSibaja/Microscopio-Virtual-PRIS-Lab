@@ -1,0 +1,111 @@
+version: '3.9'
+
+services:
+  db_vm:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: microscopio
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: microVirtual
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - mynetwork_vm
+
+
+  daphne_vm:
+    build:
+      context: .
+      dockerfile: Dockerfile.daphne
+    volumes:
+      - ./virtual_microscope:/app
+    expose:
+      - "8089"
+    depends_on:
+      - db_vm
+      - redis_vm
+      - gunicorn_vm
+    networks:
+      - mynetwork_vm
+    links:
+      - redis_vm
+
+  gunicorn_vm:
+    build:
+      context: .
+      dockerfile: Dockerfile.gunicorn
+    volumes:
+      - ./virtual_microscope:/app
+    expose:
+      - "8765"
+    depends_on:
+      - db_vm
+      - redis_vm
+    networks:
+      - mynetwork_vm
+
+  celery_vm:
+    build:
+      context: .
+      dockerfile: Dockerfile.celery
+    volumes:
+      - ./virtual_microscope:/app
+    depends_on:
+      - redis_vm 
+      - gunicorn_vm
+    env_file:
+      - .env
+    networks:
+      - mynetwork_vm
+
+  redis_vm:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    command: redis-server --bind 0.0.0.0
+    networks:
+      - mynetwork_vm
+
+  documentation_vm:
+    build:
+      context: .
+      dockerfile: Dockerfile.docs
+    volumes:
+      - .:/app
+    command: make -C docs html
+    networks:
+      - mynetwork_vm
+
+  nginx_vm:
+    image: nginx:latest
+    ports:
+      - mode: host
+        protocol: tcp
+        published: 80
+        target: 80
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./virtual_microscope:/app
+    depends_on:
+      - daphne_vm
+      - gunicorn_vm
+    networks:
+      - mynetwork_vm
+
+  # sftp:
+  #   build: 
+  #     context: .
+  #     dockerfile: Dockerfile.sftp
+  #   ports:
+  #     - "2222:22"
+  #   volumes:
+  #     - ./sftp:/etc/ssh/sftp
+
+networks:
+  mynetwork_vm:
+    driver: bridge
+
+volumes:
+  db_data:

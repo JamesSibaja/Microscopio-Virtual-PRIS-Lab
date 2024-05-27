@@ -1,0 +1,323 @@
+<!-- se extiende la plantilla genérica-->
+{% extends "generica.html" %}
+{% block content %}
+<style>
+.custom-big-image-button {
+    font-size: 20px; /* Cambia el tamaño del texto (ícono) */
+    border-radius: 5px; /* Agrega esquinas redondeadas */
+}
+.custom-big-image-button:hover {
+    cursor: pointer;
+}
+.leaflet-control-measure .results .group:first-child {
+    
+    height: 0;
+    color: rgb(0,0,0,0);
+}
+</style>
+<div class="container" style="background-color:rgb(255, 255, 255);" style="width:100%;height: 100%" >
+    <div class="separar"></div>  
+<script type="text/javascript">
+    $(document).ready(function() {
+        var myButton = document.getElementById("myButton");
+        var polygon = null;
+        var polyLine = null;
+        var polygonPoints = [];
+        var polygonDraw  = false;
+        var i = "{{slide.path}}";
+        var h = "{{slide.zoomI}}";
+        var j = "{{slide.zoomM}}";
+        var slide_url_format = "/media/slides/"+i+"/{z}/{y}/{x}.jpg";
+
+       var imageBounds = L.latLngBounds(
+        L.latLng(-62, -115),  // Coordenadas del borde inferior izquierdo
+        L.latLng(62, 115)   // Coordenadas del borde superior derecho
+        );
+        // console.log(map.latLngToLayerPoint(-62,-115));
+        
+
+       var map = L.map('map').fitBounds(imageBounds, {
+           center: [0,0],
+           zoom: h,
+           fullscreenControl: true,
+           fullscreenControlOptions: {
+                position: 'bottomright'
+            },
+           animate: true
+       });
+
+       L.control.fullscreen({
+            position: 'topright',  // Posición del botón (topright, topleft, bottomright, bottomleft)
+            title: 'Pantalla completa',  // Texto que aparecerá cuando el usuario pase el cursor sobre el botón
+            titleCancel: 'Salir de pantalla completa',  // Texto para salir de pantalla completa
+            forceSeparateButton: true  // Mostrar un botón separado para salir de pantalla completa
+        }).addTo(map);
+
+        L.control.bigImage({
+            position: 'bottomright',
+            title: 'Obtener imagen',
+            printControlLabel:'📷',
+            printControlClasses: ['custom-big-image-button'],
+            minScale:1,
+            maxScale:1,
+            inputTitle:'Escala de foto',
+
+            downloadTitle:'Descargar',
+        }).addTo(map);
+        // Convierte las coordenadas geográficas a coordenadas de píxeles en el sistema del mapa
+        var layerPoint = map.latLngToLayerPoint([62, -115]);
+
+        console.log("Coordenadas en píxeles:", layerPoint.x, layerPoint.y);
+
+        layerPoint = map.latLngToLayerPoint([0, 0]);
+
+        console.log("Coordenadas en píxeles:", layerPoint.x, layerPoint.y);
+
+        layerPoint = map.latLngToLayerPoint([-62, 115]);
+
+        console.log("Coordenadas en píxeles:", layerPoint.x, layerPoint.y);
+
+       var layer =  L.tileLayer(slide_url_format, {
+           minZoom:0,
+           noWrap: true,
+           keepBuffer:8,
+           maxZoom:j
+       }).addTo(map);
+       map.attributionControl.setPrefix(false);
+       var miniMap = new L.Control.MiniMap(
+                    L.tileLayer(slide_url_format),
+                    { position: 'bottomleft',toggleDisplay: true }
+                );
+
+                // Agrega el minimapa al mapa principal
+        miniMap.addTo(map);
+        var pos = map.getBounds();
+        var popup = L.popup();
+        i18next.init({
+            lng: 'es', // Idioma de localización
+            resources: {
+                es: {
+                    translation: {
+                        version: 'Versión', // Ejemplo de traducción
+                        lastpoint:  '',
+                        // ... Más traducciones aquí
+                        
+                    }
+                }
+            }
+        });
+        var drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+
+       
+
+        L.drawLocal.draw.toolbar.actions.title = 'Cancelar dibujo';
+        L.drawLocal.draw.toolbar.actions.text = 'Cancelar';
+        L.drawLocal.draw.toolbar.undo.title = 'Deshacer último punto dibujado';
+        L.drawLocal.draw.toolbar.undo.text = 'Deshacer';
+        L.drawLocal.draw.toolbar.finish.title = 'Terminar dibujo';
+        L.drawLocal.draw.toolbar.finish.text = 'Terminar';
+
+        L.drawLocal.draw.handlers.circle = {
+            tooltip: {
+                start: 'Haz clic y arrastra para dibujar un círculo.'
+            },
+            radius: 'Radio'
+        };
+        L.drawLocal.draw.toolbar.buttons.circle = 'Dibujar un círculo';
+
+        L.drawLocal.draw.handlers.marker = {
+            tooltip: {
+                start: 'Haz clic en el mapa para colocar el marcador.'
+            }
+        };
+        L.drawLocal.draw.toolbar.buttons.marker = 'Colocar un marcador';
+
+        L.drawLocal.draw.handlers.polygon = {
+            tooltip: {
+                start: 'Haz clic para comenzar a dibujar el polígono.',
+                cont: 'Haz clic para continuar dibujando el polígono.',
+                end: 'Haz clic en el primer punto para cerrar este polígono.'
+            },
+        };
+        L.drawLocal.draw.toolbar.buttons.polygon = 'Dibujar un poligono';
+
+        L.drawLocal.draw.handlers.polyline = {
+            error: '<strong>Error:</strong> Las aristas no deben cruzarse.',
+            tooltip: {
+                start: 'Haz clic para comenzar a dibujar la línea.',
+                cont: 'Haz clic para continuar dibujando la línea.',
+                end: 'Haz clic en el último punto para terminar.'
+            },
+        };
+        L.drawLocal.draw.toolbar.buttons.polyline = 'Dibujar una linea';
+
+        L.drawLocal.draw.handlers.rectangle = {
+            tooltip: {
+                start: 'Haz clic y arrastra para dibujar un rectángulo.'
+            },
+        };
+        L.drawLocal.draw.toolbar.buttons.rectangle = 'Dibujar un rectangulo';
+
+        L.drawLocal.draw.handlers.circlemarker = {
+            tooltip: {
+                start: 'Haz clic para colocar un marcador circular.'
+            },
+        };
+        L.drawLocal.draw.toolbar.buttons.circlemarker = 'Colocar un marcador circular';
+
+
+        L.drawLocal.edit.handlers.edit.tooltip.text = 'Arrastra los manejadores o los marcadores para editar las geometrías.';
+        L.drawLocal.edit.handlers.remove.tooltip.text = 'Haz clic en una geometría para eliminarla.';
+        L.drawLocal.edit.toolbar.actions.save.text = 'Guardar cambios';
+        L.drawLocal.edit.toolbar.actions.cancel.text = 'Cancelar edición';
+        L.drawLocal.edit.toolbar.actions.clearAll.text = 'Borrar todo';
+        L.drawLocal.edit.toolbar.buttons.edit = 'Editar';
+        L.drawLocal.edit.toolbar.buttons.remove = 'Eliminar';
+        L.drawLocal.edit.toolbar.buttons.editDisabled = 'No hay entidad para editar.';
+        L.drawLocal.edit.toolbar.buttons.removeDisabled = 'No hay entidad para eliminar.';
+
+        var drawControl = new L.Control.Draw({
+            position: 'bottomright',  // Posición en la esquina inferior derecha
+            edit: {
+                featureGroup: drawnItems
+                
+            },
+            draw: {
+                polygon: true,
+                polyline: true,
+                rectangle: true,
+                circle: true,
+                marker: true,
+                circlemarker: true,
+                
+            }
+        });
+        map.addControl(drawControl);
+        map.on(L.Draw.Event.CREATED, function (e) {
+            var layer = e.layer;
+            console.log(layer.editing);
+            drawnItems.addLayer(layer);
+        });
+        L.control.measure({
+            primaryLengthUnit: 'meters', // Unidad de medida principal
+            secondaryLengthUnit: 'kilometers', // Unidad de medida secundaria
+            primaryAreaUnit: 'sqmeters', // Unidad de área principal
+            secondaryAreaUnit: undefined, // Deja esto como undefined para deshabilitar el cálculo de áreas
+            // Posición del control en el mapa
+            activeColor: '#db4a29', // Color activo para las líneas y áreas medidas
+            completedColor: '#9b2d14', // Color completado para las líneas y áreas medidas
+            position: 'bottomright',
+            localization: 'es', 
+            className: 'custom-measure-control' 
+        }).addTo(map);
+
+    //    map.setMaxBounds(imageBounds);
+
+    //    function updatePolygon() {
+    //         if (polygon) {
+    //             map.removeLayer(polygon);
+                
+    //         }
+
+    //         if (polyLine){
+    //             map.removeLayer(polyLine);
+    //         }
+            
+    //         if (polygonPoints.length > 2) {
+                
+    //             if(polygonDraw){
+    //                 polyLine = L.polyline(polygonPoints, { color: 'Red' }).addTo(map);
+    //             }else{
+    //                 polygon = L.polygon(polygonPoints, { color: 'blue', fillOpacity: 0.2 }).addTo(map);
+    //             }
+    //         }else{
+    //             if (polygonPoints.length > 1 ) {
+    //                 polygon = L.polyline(polygonPoints, { color: 'Red' }).addTo(map);
+    //             }else{
+    //                 if (polygonPoints.length > 0 ) {
+    //                     polygon = L.circleMarker(polygonPoints[0], { color: 'red',fillOpacity: 0,radius: 2 }).addTo(map);
+    //                 }
+    //             }
+    //         }
+    //     }
+      
+    //    function onMapClick(e) {
+    //         if(polygonDraw){
+    //             polygonPoints.push([e.latlng.lat, e.latlng.lng]);
+    //         }
+    //         updatePolygon();
+    //         // pos = map.getBounds();
+    //         // popup
+    //         //     .setLatLng(e.latlng)
+    //         //     .setContent("Ver" )
+    //         //     .openOn(map);
+            
+    //     }
+
+        var mapContainer = map.getContainer();
+        mapContainer.addEventListener('mouseenter', function() {
+            if(polygonDraw){
+                mapContainer.classList.add('custom-cursor');
+            }
+        });
+        mapContainer.addEventListener('mouseleave', function() {
+            if(polygonDraw){
+                mapContainer.classList.remove('custom-cursor');
+            }
+        });
+
+       
+        // map.on('click', onMapClick);
+        // $('#MyButton').click(function(){
+        //     map.fitBounds(pos)
+        // });
+
+        map.on('click', onMapClick);
+        $('#myPolygon').click(function(){
+            polygonDraw = !polygonDraw ;
+            if(polygonDraw){
+                polygonPoints = [];
+            }
+            updatePolygon();
+        });
+        
+        // var myPolygon = document.getElementById("myPolygon");
+        //     myPolygon.addEventListener("click", function() {
+        //     myPolygon.classList.toggle("active");
+        // });
+
+        // map.on('zoomstart', function () {
+        //     map.setMaxBounds(null);
+        // });
+
+        // // Restablecer los límites cuando finaliza el zoom
+        // map.on('zoomend', function () {
+        //     map.setMaxBounds(imageBounds);
+        // });
+
+       }
+      );
+    
+       
+   
+
+</script>
+<div id="map" style="background-color:rgb(0, 0, 0);box-shadow: 1px 1px 10px rgb(100, 99, 99); top:3rem;left: 5% ;border-radius:10px;width:90%;height: 70%"></div>   
+
+<!-- <button style="position: relative;top: 10%;left: 30%;" class="btn btn-primary js-tooltip" type="submit" onclick="location.href='{{ slide.getAbsoluteUrl }}'">Pantalla Completa</button>   -->
+<!-- <input id="myPolygon" style="position: relative;top: 10%;left: 30%;" class="btn btn-outline-success js-tooltip" type="button" value="Dibujar Poligono" > -->
+<button style="position: relative;top: 10%;left: 30%;" class="btn btn-dark js-tooltip" type="submit" onclick="location.href='{% url 'Catalogo' %}'">Retroceder</button>
+
+</div>
+
+<style>
+
+    #map.custom-cursor {
+      cursor: crosshair; /* Estilo de cursor personalizado */
+    }
+  </style>
+
+{% endblock %}
+
+

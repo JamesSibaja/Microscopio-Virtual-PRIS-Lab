@@ -1,0 +1,337 @@
+<!-- se extiende la plantilla genérica-->
+{% extends "generica.html" %}
+{% load static %}
+{% block content %}
+
+<div style="padding-left: 2%;padding-right: 1%;width: 100%;height: 100%;">  
+
+<script>
+
+    var geojson_list = {{ geojson_list|safe }};
+    var userId = "{{user_id}}";
+    var project = "{{ project.id }}";
+    var host = "{{ request.get_host }}";
+    var optionNum = "{{optionNum}}";
+    var mapSlide = "{{mapSlide}}";
+    // var noteGeojson='{{ note.geojson_data}}';
+    // var noteDraw = null;
+    // if (noteGeojson!= 'None'){
+    //     noteDraw = JSON.parse('{% autoescape off %}{{ note.geojson_data|escapejs }}{% endautoescape %}');
+    // }
+
+    if("{{optionNum}}"==1){
+        var slideMap = {
+            path: "{{mapSlide.slide.path}}",
+            zoomI: "{{mapSlide.slide.zoomI}}",
+            zoomM: "{{mapSlide.slide.zoomM}}",
+            zoomMin: "{{mapSlide.slide.zoomMin}}",
+            maxLatLng: "{{mapSlide.slide.maxLatLng}}",
+            centerLat: "{{mapSlide.slide.centerLat}}",
+            centerLng: "{{mapSlide.slide.centerLng}}",
+            factor: "{{mapSlide.slide.factor}}",
+            noteDraw: 'None',
+            noteGeojson: 'None'
+        };
+    }
+    if("{{optionNum}}"==2){
+        var slideMap = {
+            path: "{{mapSlide.path}}",
+            zoomI: "{{mapSlide.zoomI}}",
+            zoomM: "{{mapSlide.zoomM}}",
+            zoomMin: "{{mapSlide.zoomMin}}",
+            maxLatLng: "{{mapSlide.maxLatLng}}",
+            centerLat: "{{mapSlide.centerLat}}",
+            centerLng: "{{mapSlide.centerLng}}",
+            factor: "{{mapSlide.factor}}",
+            noteDraw: 'None',
+            noteGeojson: 'None'
+        };
+    }
+
+</script>
+
+
+<link rel="stylesheet" href="{% static 'projects/css/projects.css' %}">
+<script type="text/javascript" src="{% static 'microscope/js/micro.js' %}"></script>
+<script type="text/javascript" src="{% static 'projects/js/projects.js' %}"></script>
+
+<div style = "float: right;right: 0%; width:25%;height: 100%;">
+   
+    <!-- <button class="btn btn-primary js-tooltip" onclick="w3_open()"></button> -->
+    <div style="top:1%;position: relative;height: 7%; padding: 2%;">   
+        <div  class="menu" style="z-index:1;width: 100%">
+            <button id = "menuBt"  class="btn btn-outline-dark js-tooltip menu-btn" style="width: 100%;"></button>
+            <ul id="menuList"  class="menu-list">
+              <li><a href="#" id= 'placas_btn' onclick="opcionClick('Láminas Virtuales')">Láminas Virtuales</a></li>
+              <li><a href="#" id= 'catalogo_btn' onclick="opcionClick('Catalogo')">Catálogo</a></li>
+              <li><a href="#" id= 'chat_btn' onclick="opcionClick('Chat')">Chat</a></li>
+              {%if user_id == project.user.id%}
+              <li><a href="#" id= 'colaboradores_btn' onclick="opcionClick('Colaboradores')">Invitar Colaborador</a></li>
+              {%endif%}
+              <!-- Agrega más opciones de menú según tus necesidades -->
+            </ul>
+          </div>   
+      <!-- <h3 style="text-align: center;">Placas:</h3> -->
+    </div>
+    <!-- <div id="datos_actualizados" style="box-shadow: 1px 1px 10px rgb(100, 99, 99);position: relative;left: 0%;top:2%;width:73%;height: 63%">
+      
+    </div>  -->
+    <div style="top:1%;position: relative; float: left;left:2%;padding: 2%; box-shadow: 1px 1px 3px rgb(100, 99, 99);border-radius:10px;background-color:rgb(255, 255, 255);width: 96%">
+                        
+                                
+        <div  style="display: flex; width:100%;">
+            <input style="display: inline-block;width: 90%" type="text" id ="buscarDato" class="form-control input-busqueda" placeholder="Buscar ..." name ="buscar" value="">
+            
+            <button id ="btn_buscar" class="btn btn-outline-dark  js-tooltip boton-busqueda">
+                <i class="material-icons">search</i>
+            </button>
+        </div>
+            
+            
+    </div>
+    <div style="float:left;height:1%;width:100%"></div> 
+<div id="datos_actualizados" style="position: relative; overflow-y: scroll;height: 68%; width: 100%;top:1%;">
+    
+    </div>
+    
+    <div style="position: relative; padding-top: 2%;overflow-y: scroll;height: 8%;bottom:0%;width:100%">
+        <div style="display: none;" id="chatInput">
+        <form id="message-form" >
+            <input type="text"  autocomplete="off" name="message" id="message-input" placeholder="Escribe un mensaje...">
+            <button type="submit" class="btn btn-outline-primary js-tooltip" id="send-button"><i style="font-size: 20px;" class="material-icons">send</i></button>
+        </form>
+        </div>
+    </div>
+    <div style = "position: relative;padding-top: 2%;padding-right:15%;padding-left:15%; width:100%">
+        <button style=" position: relative;width: 100%;" class="btn btn-outline-dark btn-block js-tooltip" type="submit" onclick="location.href='{% url 'project-list' %}'">Retroceder</button>
+  
+     </div>
+     
+</div>
+  
+<div id="miModal" class="modal">
+    <div class="modal-contenido">
+    <span class="cerrar" id="cerrarModal">&times;</span>
+    {%if optionNum == 1%}
+        <h2>Editar {{mapSlide.name}}</h2>
+    {%else%}
+        <h2>Nueva Lámina Virtual</h2>
+    {%endif%}
+    <form method="POST" > 
+        {% csrf_token %}
+        {{ form.as_p }}
+        <!-- Otros campos de formulario... -->
+        {%if optionNum == 1%}
+            <input id="slide" type="hidden" name="slide" value='{{mapSlide.slide.id}}'>
+            <div style="position: relative; left: 2%;" class="botones">
+                <button type="submit" class="boton-enviar btn-primary">Guardar</button>
+        {%else%}
+            <input id="slide" type="hidden" name="slide" value='{{mapSlide.id}}'>
+            <div style="position: relative; left: 2%;" class="botones">
+                <button type="submit" class="boton-enviar btn-primary">crear</button>
+        {%endif%}
+            
+                <button type="button" class="boton-cerrar btn-danger " id="cerrarModal2">Cancelar</button>
+            </div>
+    </form>
+    </div>
+</div>
+
+    
+        {%if mapSlide%}
+        <div style="position: relative;background-color:rgba(0, 0, 0, 0);left: 0%;top:2%;width:73%;height: 68%">
+            <div id="map" style="z-index: 0;position: relative;box-shadow: 1px 1px 10px rgb(100, 99, 99);background-color:rgb(0, 0, 0);left: 0%;top:0%;width:100%;height: 100%"></div>   
+        </div>     
+        <div style="padding:1%; box-shadow: 1px 1px 10px rgb(100, 99, 99);border-radius:10px;background: rgb(255, 255, 255);position: relative;top: 4%;width: 73%;height: 26%">
+            
+            <div style="padding-right:1%;position:relative;width: 83%;height:100%;float: left;">
+                {%if optionNum == 1%}
+                <h2 style="text-align: center;">{{mapSlide.name}}</h2>
+                {%else%}
+                <h2 style="text-align: center;">{{mapSlide.name}} <span style="font-size: 15px;color: rgb(0, 100, 0);">(Catálogo)</span></h2>
+                {%endif%}
+                <hr>
+                <div style="position: relative; overflow-y: scroll; height: 60%; width: 100%;">
+
+                    <h2>Descripción</h2>
+                    <div style="border-radius: 10px; padding: 1%; background-color: rgb(241, 241, 241);">
+                        {{mapSlide.description}}
+                    </div>
+                </div>
+            
+            <!-- <form method="POST" >
+                    
+                <div style="padding: 1%;width: 100%;height: 100%;">
+                    {% csrf_token %}
+                    {%if optionNum == 1%}
+                    <input id="slide" type="hidden" name="slide" value='{{mapSlide.slide.id}}'>
+                    {%else%}
+                    <input id="slide" type="hidden" name="slide" value='{{mapSlide.id}}'>
+                    {%endif%}
+                    {{ form.as_p }}
+                <div style="width: 100%;padding-left: 5%;padding-bottom: 5%;"> 
+                    <button class="btn btn-dark js-tooltip" type="submit">Guardar cambios</button>
+                  </div>    
+                </div>
+         
+            </form> -->
+        </div>
+        <div  style="width: 17%;overflow-y: scroll;padding-top: 1%;height: 100%;position: relative;float: left;">
+            
+            {%if optionNum == 1%}
+                <button style="width: 100%;" class="btn btn-outline-dark js-tooltip" type="submit" onclick="location.href='/projectDetail/{{project.id}}/1/0'"><i class="material-icons">home</i></button>
+                <div style="height: 3%;width: 100%;position: relative;float: left;"></div>
+                <button style="width: 100%;" class="btn btn-outline-dark js-tooltip" type="submit" onclick="location.href='{{ mapSlide.get_absolute_url }}'">Abrir</button>
+                <div style="height: 3%;width: 100%;position: relative;float: left;"></div>
+                <button id ="abrirModal" style="width: 100%;" class="btn btn-outline-dark js-tooltip" type="submit" onclick="location.href='#'">Editar Lámina</button> 
+                <div style="height: 3%;width: 100%;position: relative;float: left;"></div>
+                <button style="width: 100%;" class="btn btn-outline-danger js-tooltip" type="submit" onclick="location.href='/deleteProjectSlide/{{mapSlide.id}}'">Eliminar</button>
+            
+            {%else%}
+                
+                <button style="width: 85%;" class="btn btn-outline-dark js-tooltip" type="submit" onclick="location.href='/projectDetail/{{project.id}}/1/0'"><i class="material-icons">home</i></button>
+                <div style="height: 4%;width: 100%;position: relative;float: left;"></div>
+                <!-- <button style="width: 80%;" class="btn btn-info js-tooltip" type="submit" onclick="location.href='{{ mapSlide.get_absolute_url }}'">Crear Lámina</button> -->
+                <button id ="abrirModal" style="padding: 6%;width: 85%;" class="btn btn-outline-info js-tooltip" type="submit" onclick="location.href='#'"><i class="material-icons">biotech</i><h5>Crear Lámina </h5></button> 
+            {%endif%}
+
+            </div>
+        </div>
+        
+        {%else%}
+        <!-- <div id="map" style="display: none;"></div> -->
+            <div  style="padding-bottom: 5%;padding-left: 5%;padding-right: 5%;overflow-y: scroll;position: relative;box-shadow: 1px 1px 10px rgb(100, 99, 99);background-color:rgb(255, 254, 254);left: 0%;top:2%;width:73%;height: 95%">
+                <div style="position:relative;padding: 2%;top:3%;width: 100%;">
+                    <h1 style="text-align: center;">{{project.name}}</h1>
+                    <!-- <hr>     -->
+                </div>
+                <hr > 
+                
+               
+                <!-- <div style="position:relative;float: left;width: 50%;">
+                    <h3 style="text-align: center;">Placas Virtuales:<a style="color:blue;"> {{numPlacas}}</a> </h3>
+                </div> -->
+                <!-- <div style="position:relative;top:2%;width: 100%;">
+                    <hr> 
+                </div> -->
+                <!-- <div style="position:relative;top:2%;width: 100%;padding: 2%;">
+                    <h2>Creador del poryecto</h2>
+                </div> -->
+                <h4 style="text-align: center;">Datos del propietario</h4>
+                <div style="position:relative;float: left;width:100%;padding: 2%;">
+                    <div class="titulo-y-botones" >
+                        <div style="margin-right: 15px;padding-bottom: 170px;position: relative;width: 170px" >
+                            <img style="object-fit: cover;width: 100%;height: 100%;position: absolute;border-radius: 50%;" src="{{ project.user.userprofile.profile_image.url }}" alt="Imagen de Perfil">
+                        </div>  
+                        <table>
+                            <tr>
+                                <td ><h3 >Nombre: </h3></td>
+                                <td ><h4 >{{project.user.first_name}} {{project.user.last_name}}</h4></td>
+                            </tr>
+                            <tr>
+                                <td ><h3 >Usuario: </h3> </td>
+                                <td ><h4 >{{project.user}} </h4></td>
+                            </tr>
+                            <tr>
+                                <td ><h3>Correo: </h3> </td>
+                                    <td ><h5 >{{project.user.email}}</h5></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <hr style="position:relative;float: left;width: 100%;"> 
+                <div style="position:relative;float: left;width: 100%;">
+                    <div style="position:relative;float: left;width: 25%;">
+                        <h4 style="text-align: center;">Participantes: </h4> 
+                    </div>
+                    <div style="position:relative;float: left;width: 25%;">
+                        <h4 style="text-align: center;"><a style="color:blue;"> {{numUser}} </a> </h4>
+                    </div>
+                    <div style="position:relative;float: left;width: 25%;">
+                        <h4 style="text-align: center;">Láminas Virtuales: </h3> 
+                    </div>
+                    <div style="position:relative;float: left;width: 25%;">
+                        <h4 style="text-align: center;"><a style="color:blue;"> {{numPlacas}} </a> </h4>
+                        
+                    </div>
+                </div>
+                <hr style="position:relative;float: left;width: 100%;"> 
+                <div style="position:relative;float: left;top:2%;width: 100%;padding: 2%;">
+                    <h2>Descripción</h2>
+                </div>
+                
+                <div style="position:relative;float: left;top:2%;border-radius: 10px;width: 100%;padding: 2%;background-color: rgb(241, 241, 241);">
+                    <h3 style="text-align: center;">{{project.description}}</h3>
+                </div>
+                <div style="position:relative;float: left;top:2%;width: 100%;padding: 2%;">
+                    <h2>Colaboradores</h2>
+                </div>
+                    <!-- <div style="position: relative; float: left;left: 2%; width: 96%">
+                        
+                        <div style="padding: 1%; width: 100%">
+                            <hr style="margin: 0;">
+                            <h3 >{{project.user}} (Propietario)</h3> 
+
+                            <h4 >{{project.user.first_name}} {{project.user.last_name}}</h4>
+                        </div>
+                    </div> -->
+               
+                {%for data in admin%}
+                <!-- if(data.id[i]!=data.ownerID){-->
+                            <div style="padding: 1%;position: relative; float: left;left: 2%; width: 96%">
+                                    <hr style="margin: 0;">
+                                    <div class="titulo-y-botones">
+                                        <div style="padding-bottom: 80px;position: relative;width: 80px;" >
+                                            <img style="object-fit: cover;width: 100%;height: 100%;position: absolute;border-radius: 50%;" src="{{ data.userprofile.profile_image.url }}" alt="Imagen de Perfil">
+                                        </div>   
+                                        <div style="margin-left: 15px;">
+                                        <h3 >{{data.username}} (Admin)</h3>
+                                        <h4 >{{data.first_name}} {{data.last_name}}</h4>
+                                    </div>
+                                {%if user_id == project.user.id%}
+                                    <a href="#" style="display: inline-block;display: flex;position: absolute;right: 2%;"><i   class="btn-opcion material-icons" onclick="location.href='/deleteProjectUser/{{project.id}}/{{data.id}}'" >person_remove</i></a>
+                                {%endif%}
+                               </div>
+                                </div>
+                    
+                {%endfor%}
+                {%for data in member%}
+                <!-- if(data.id[i]!=data.ownerID){-->
+                            <div style="padding: 1%;position: relative; float: left;left: 2%; width: 96%">
+                                    <hr style="margin: 0;margin-bottom: 2%;">
+                                    <div class="titulo-y-botones">
+                                        <div style="padding-bottom: 80px;position: relative;width: 80px;" >
+                                            <img style="object-fit: cover;width: 100%;height: 100%;position: absolute;border-radius: 50%;" src="{{ data.userprofile.profile_image.url }}" alt="Imagen de Perfil">
+                                        </div>   
+                                        <div style="margin-left: 15px;">
+                                        <h3 >{{data.username}}</h3>
+                                        <h4 >{{data.first_name}} {{data.last_name}}</h4>
+                                    </div>
+                                <!-- if(data.ownerID.toString()=='{{user_id}}'){ -->
+                                {%if isAdmin%}
+                                    <a href="#" style="display: inline-block;display: flex;position: absolute;right: 2%;"><i   class="btn-opcion material-icons" onclick="location.href='/deleteProjectUser/{{project.id}}/{{data.id}}'" >person_remove</i></a>
+                                {%endif%}
+                               
+                                </div>
+                                </div>
+                    
+                {%endfor%}
+                
+                
+            </div>   
+        {%endif%}
+    
+<!-- <button class="btn btn-outline-dark btn-block js-tooltip" id="actualizar_btn">Seleccionar placa virtual {{placaId}} </button>  -->
+   
+   
+
+  
+<!-- <button style="position: relative;top: 10%;left: 30%;" class="btn btn-primary js-tooltip" type="submit" onclick="location.href='{% url 'Catalogo' %}'">Retroceder</button>
+ 
+<input id="MyButton" style="position: relative;top: 10%;left: 30%;" class="btn btn-primary js-tooltip" type="button" value="SET" onclick="onMap();">
+     -->
+    </div>
+
+{% endblock %}
+
+

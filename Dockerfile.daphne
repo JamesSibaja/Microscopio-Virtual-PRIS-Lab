@@ -1,0 +1,53 @@
+# Utiliza una imagen base de Python para Django
+FROM python:3.10.12
+
+# Instala las dependencias del sistema necesarias para lxml
+RUN apt-get update
+
+# Establece el directorio de trabajo en /app
+WORKDIR /app
+
+# Copiar el resto de los archivos de la aplicación
+COPY ./virtual_microscope /app
+
+COPY requirements.txt /app/
+
+# RUN apt-get update && \
+#     apt-get install -y --no-install-recommends \
+#     texlive-xetex \
+#     texlive-fonts-recommended \
+#     texlive-fonts-extra \
+#     latexmk \
+#     libxml2-dev \
+#     libxslt1-dev \
+#     fonts-texgyre \
+#     texlive-lang-spanish && \
+#     rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    fonts-freefont-ttf \
+    postgresql \
+    postgresql-contrib \
+    libopenslide0 \
+    nginx && \
+    rm -rf /var/lib/apt/lists/*
+
+# activa el entorno virtual, actualiza pip e instala las dependencias de Python
+RUN . venv/bin/activate && \
+    pip install --upgrade pip && \
+    pip install -r requirements.txt
+
+# Configura las variables de entorno para Django
+ENV DJANGO_SETTINGS_MODULE=virtual_microscope.settings
+
+# Copia la configuración de Nginx
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Ejecuta collectstatic
+RUN . venv/bin/activate && \
+    python manage.py collectstatic --noinput
+
+# Comando para iniciar el servidor Django con Daphne y Nginx
+CMD mkdir -p /app/run/ && . venv/bin/activate && exec daphne -b 0.0.0.0 -p 8089 virtual_microscope.asgi:application
+

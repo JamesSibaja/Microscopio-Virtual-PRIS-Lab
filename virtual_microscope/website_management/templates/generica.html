@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<!-- Plantilla genérica -->
+<html lang="en">
+<head>
+  {% load static %}
+  {% block title %}<title>UCR Virtual Microscope</title>{% endblock %}
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+      
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <meta name="robots" content="NONE,NOARCHIVE" />
+      
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap -->
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css'%}" rel="stylesheet">
+
+    <!-- Fonts -->
+  
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i" rel="stylesheet">
+    
+
+  <!-- Styles -->
+  <link href="{% static 'css/gestion.css'%}" rel="stylesheet">
+    
+  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+  <!-- <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js" integrity="sha512-U2WE1ktpMTuRBPoCFDzomoIorbOyUv0sP8B+INA3EzNAhehbzED1rOJg6bCqPf/Tuposxb5ja/MAUnC8THSbLQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <!-- <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css"/> -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css" integrity="sha512-jU/7UFiaW5UBGODEopEqnbIAHOI8fO6T99m7Tsmqs2gkdujByJfkCbbfPSN4Wlqlb9TGnsuC0YgUgWkRBK7B9A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- <div class="my-dropzone"></div> -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-measure@2.1.7/dist/leaflet-measure.css" />
+  <script src="https://unpkg.com/leaflet-measure@2.1.7/dist/leaflet-measure.js"></script>
+  <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet-control-print@1.6.0/dist/leaflet-control-print.min.css" /> -->
+  <script type="text/javascript" src="{% static 'dist/leaflet-control-credits.js'%}"></script>
+  <link rel="stylesheet" type="text/css" href="{% static 'dist/leaflet-control-credits.css'%}" />
+  <!-- <script type="module" src="{% static 'js/leaflet-measure.js/leaflet-measure.js'%}"></script> -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-minimap@3.6.0/dist/Control.MiniMap.min.css" />
+  <script src="https://unpkg.com/leaflet-minimap@3.6.0/dist/Control.MiniMap.min.js"></script>
+  <!-- <script src="https://unpkg.com/leaflet-control-print@1.6.0/dist/leaflet-control-print.min.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/i18next@22.3.0/dist/umd/i18next.min.js"></script>
+  
+  <link rel="stylesheet" href="{% static 'dist/Control.FullScreen.css'%}" />
+  <script  type="text/javascript" src="{% static 'dist/Control.FullScreen.js'%}"></script>
+  <script type="text/javascript" src="{% static 'dist/Leaflet.BigImage.min.js'%}"></script>
+  <link rel="stylesheet" type="text/css" href="{% static 'dist/Leaflet.BigImage.min.css'%}" />
+  
+<style>
+  #map.fullscreen{ 
+    z-index: 9999; 
+    width: 50%; 
+    height: 100%; 
+    position: fixed; 
+    top: 0; left: 0; 
+  } 
+  #map{
+    background-color:rgb(0, 0, 0);
+    box-shadow: 1px 1px 10px rgb(197, 197, 197); 
+    top:3rem;left: 15%;
+    border-radius:10px;
+    width:70%;
+    height: 70%
+  } 
+  html, body {
+    background:  rgb(245, 245, 245);
+      height: 97%;
+    margin: 0px;
+    
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover;
+  }
+  .container {
+      height: 100%;
+      background: #f0e68c;
+  }
+  .video-container {
+      position: relative;
+      width: 80%;
+      margin: auto;
+      max-width: 800px;
+      min-width: 300px;
+      overflow: hidden;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Agregar sombra al marco */
+    }
+    
+    video {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
+    
+    video.loop {
+      animation: loopVideo 5s linear infinite;
+    }
+    
+    /* @keyframes loopVideo {
+      0% { opacity: 0; }
+      25% { opacity: 1; }
+      75% { opacity: 1; }
+      100% { opacity: 0; }
+    } */
+  /* .containerfooter {
+      height: 100%;
+      position: relative;
+      padding: 3rem;
+      margin: 0.5rem;
+      max-width: 720px;
+      margin-right: auto;
+      margin-left: auto;
+  }
+  containerfooter {
+      height: 100%;
+      position: relative;
+      padding: 3rem;
+      margin: 0.5rem;
+      max-width: 720px;
+      margin-right: auto;
+      margin-left: auto;
+  } */
+  ::-webkit-scrollbar {
+    width: 10px; /* Ancho de la barra de desplazamiento */
+    background: transparent;;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent; /* Fondo de la barra de desplazamiento */
+}
+
+::-webkit-scrollbar-thumb{
+    background: #72727259; /* Borde redondeado del mango */
+}
+
+.footercredits {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-size: 10px;
+  color: #ffffff;
+}
+
+
+</style>
+  <!-- Add additional CSS in static file -->
+
+</head>
+
+<body>
+
+{% load static %}
+
+   <div class="titulo">    
+        <!-- <img  class ="center-fit" src="{% static 'Head_image.png' %}"/>  -->
+        
+    </div>
+    
+     
+        {% block navbar %}
+        <!-- <nav class="navbar navbar-expand-md sticky-top navbar-dark navbar-toggleable-xs"  style="  background-color:rgb(11, 24, 52); box-shadow: 0px 2px 5px #3b3b3b;" > 
+          <div class="col-sm-2 col-lg-1 "></div>
+          <button class="navbar-toggler  navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+            
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse barra" id="navbarTogglerDemo01">
+            <div class="navbar-nav mr-auto ml-auto text-center" style="width: 100%;">
+              <div class="col-sm-2 col-lg-2 text-right " style="align-items: center;height: 100%;">
+                  <img src="{% static 'img/prislab.png' %}" alt="Logo" style="margin-top: 5px;max-height: 30px;">
+
+                </div>
+              <div style='align-items: center;height: 100%;'class="col-sm-2 col-lg-2 {% if request.path == '/' %}active{% endif %}">
+            <a style='margin: 0%; ' class="nav-item nav-link" href="{% url 'Inicio' %}"><h5 style=' margin: 0%; '>Inicio</h5></a>
+              </div>
+              <div style='align-items: center;height: 100%;' class="col-sm-2 col-lg-2 {% if 'micro/' in request.path%}active{% endif %} {% if request.path == '/catalogo/'%}active{% endif %}{% if request.path == '/upload_file/'%}active{% endif %}{% if request.path == '/processing/'%}active{% endif %}">
+                <a style=' margin:0%; ' class="nav-item nav-link" href="{% url 'Catalogo' %}"><h5 style=' margin: 0%; '>Microscopio</h5></a>
+          </div> 
+          
+          <div style='align-items: center; height: 100%;' class="col-sm-2 col-lg-2 {% if 'accounts/login/' in request.path %}active{% endif %}  {% if 'signup/' in request.path %}active{% endif %} {%if 'project' in request.path %}active{% endif %} {% if 'note' in request.path %}active{% endif %}">
+            <a style=' margin: 0%; ' class="nav-item nav-link" href="{% url 'Login' %}"><h5 style=' margin: 0%; '>Personas</h5></a>
+          </div>
+        </div>
+          </div>
+          <div class="col-sm-2 col-lg-1 "></div>
+        </nav> -->
+
+        <nav class="navbar navbar-expand-md sticky-top navbar-dark" style="background-color:rgb(11, 24, 52); box-shadow: 0px 2px 5px #3b3b3b; margin-left: auto; margin-right: auto;">
+          <div class="container" style="background-color: #00000000;">
+              <a class="navbar-brand" href="#">
+                  <img src="{% static 'img/prislab.png' %}" alt="Logo" style="max-height: 30px;">
+              </a>
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+                  <ul class="navbar-nav ml-auto text-center">
+                      <li class="nav-item {% if request.path == '/' %}active{% endif %}">
+                          <a class="nav-link" href="{% url 'Inicio' %}"><h5>Inicio</h5></a>
+                      </li>
+                      <li class="nav-item {% if 'micro/' in request.path%}active{% endif %}{% if request.path == '/activity_log/'%}active{% endif %}{% if request.path == '/catalogo/'%}active{% endif %}{% if request.path == '/upload_file/'%}active{% endif %}{% if request.path == '/processing/'%}active{% endif %}">
+                          <a class="nav-link" href="{% url 'Catalogo' %}"><h5>Microscopio</h5></a>
+                      </li>
+                      <li class="nav-item {% if 'accounts/login/' in request.path %}active{% endif %}  {% if 'signup/' in request.path %}active{% endif %} {%if 'project' in request.path %}active{% endif %} {% if 'note' in request.path %}active{% endif %}">
+                          <a class="nav-link" href="{% url 'Login' %}"><h5>Personas</h5></a>
+                      </li>
+                  </ul>
+              </div>
+            </div>
+        </nav>
+      
+      
+      
+      
+
+      {% endblock %}
+    
+
+  <!-- esta sección es donde irá el contenido 
+       específico de cada página que utilice la
+       plantilla genérica -->
+          {% block content %}{% endblock %}
+       
+
+          <footer id="container" style="padding-top: 30px; background-color:rgb(37, 37, 37);width: 100%" class="footerclass">
+            <div class="container" style="font-size: 14px;background-color:rgb(37, 37, 37);">
+              <div class="row" style="background-color:rgb(37, 37, 37);">
+                 
+                    <div class="col-md-4 footercol1" >
+                    <div class="widget-1 widget-first footer-widget" ><aside id="sow-editor-7" class="widget widget_sow-editor"><div class="so-widget-sow-editor so-widget-sow-editor-base">
+        <div class="siteorigin-widget-tinymce textwidget">
+          <p><span style="color: #ffffff;"><strong>SITIO</strong></span></p>
+        <p><span style="color: #ffffff;"><strong>______</strong></span></p>
+        <p><span style="color: #ffffff;"></span></p>
+        <div class="row">
+        <p></p>
+        <div class="col-md-6">
+        <p><span style="color: #ffffff;"></span></p>
+        <p></p>
+        <p><span style="color: #ffffff;"><a style="color: #ffffff;" href="{% url 'Inicio' %}">Inicio</a></span></p>
+        <p><span style="color: #ffffff;"><a style="color: #ffffff;" href="{% url 'Login' %}">Personas</a></span></p>
+        </div>
+        <div class="col-md-6">
+        <p><span style="color: #ffffff;"></span></p>
+        <p></p>
+        <p><span style="color: #ffffff;"><a style="color: #ffffff;" href="{% url 'Catalogo' %}">Microscopio</a></span></p>
+        </div>
+        </div>
+        </div>
+        </div></aside></div>						</div> 
+                                   
+                    <div class="col-md-4 footercol2">
+                    <div class="widget-1 widget-first footer-widget"><aside id="sow-editor-4" class="widget widget_sow-editor"><div class="so-widget-sow-editor so-widget-sow-editor-base">
+        <div class="siteorigin-widget-tinymce textwidget">
+          <p><span style="color: #ffffff;"><strong>VISÍTENOS</strong></span></p>
+        <p><span style="color: #ffffff;"><strong>_______<br>
+        </strong></span></p>
+        <p><span style="color: #ffffff;">Tercer piso de la Escuela de Ingeniería Eléctrica, </span></p>
+        <p><span style="color: #ffffff;">Ciudad de la Investigación, Universidad de Costa Rica, </span></p>
+        <p><span style="color: #ffffff;">San Pedro de Montes de Oca, San José, Costa Rica.</span></p>
+        <p><span style="color: #ffffff;">Teléfonos: (+506)2511-2603 / (+506)2511-2642</span></p>
+        <p><span style="color: #ffffff;">E-mail: pris-lab@googlegroups.com<br>
+        </span></p>
+        <p><span style="color: #ffffff;">Apartado postal: 11501-2060</span></p>
+        </div>
+        </div></aside></div>						</div> 
+                                     
+                    <div class="col-md-4 footercol3">
+                    <div class="widget-1 widget-first footer-widget"><aside id="sow-editor-5" class="widget widget_sow-editor"><div class="so-widget-sow-editor so-widget-sow-editor-base">
+        <div class="siteorigin-widget-tinymce textwidget">
+          <p><span style="color: #000000;"><strong>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ffffff;">&nbsp; SÍGANOS</span></strong></span></p>
+        <p><span style="color: #ffffff;"><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _______</strong></span></p>
+        <p><span style="color: #000000;"><a href="https://www.facebook.com/PRISLaboratory/" target="_blank"><img class="wp-image-204 alignleft" src="http://pris.eie.ucr.ac.cr/wp-content/uploads/2016/03/Social-Logos-01.png" alt="Social Logos-01" srcset="https://pris.eie.ucr.ac.cr/wp-content/uploads/2016/03/Social-Logos-01.png 300w, https://pris.eie.ucr.ac.cr/wp-content/uploads/2016/03/Social-Logos-01-150x150.png 150w, https://pris.eie.ucr.ac.cr/wp-content/uploads/2016/03/Social-Logos-01-60x60.png 60w" sizes="(max-width: 30px) 100vw, 30px" width="30" height="30"></a><a href="https://www.youtube.com/user/PRISLaboratory" target="_blank"><img class="wp-image-206 alignleft" src="http://pris.eie.ucr.ac.cr/wp-content/uploads/2016/03/Social-Logos-03.png" alt="Social Logos-03" srcset="https://pris.eie.ucr.ac.cr/wp-content/uploads/2016/03/Social-Logos-03.png 300w, https://pris.eie.ucr.ac.cr/wp-content/uploads/2016/03/Social-Logos-03-150x150.png 150w, https://pris.eie.ucr.ac.cr/wp-content/uploads/2016/03/Social-Logos-03-60x60.png 60w" sizes="(max-width: 30px) 100vw, 30px" width="30" height="30"></a></span></p>
+        <p></p>
+        </div>
+        </div></aside></div><div class="widget-2 widget-last footer-widget"><aside id="sow-editor-10" class="widget widget_sow-editor"><div class="so-widget-sow-editor so-widget-sow-editor-base">
+        <div class="siteorigin-widget-tinymce textwidget">
+          <p><a href="http://www.ucr.ac.cr/" target="_blank"><img class="alignleft wp-image-1429" src="http://pris.eie.ucr.ac.cr/wp-content/uploads/2017/02/firma-horizontal-dos-lineas-blanco.png" width="260" height="77"></a></p>
+        </div>
+        </div></aside></div>						</div> 
+                                        </div> <!-- Row -->
+              <div class="footercredits clearfix">
+                          <p>© 2024 PRIS-Lab. Universidad de Costa Rica</p>    	</div><!-- credits -->
+            </div><!-- container -->
+        </footer>
+<script src="{% static 'vendor/jquery/jquery.min.js'%}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<!-- Plantilla genérica -->
+<html lang="en">
+<head>
+  {% load static %}
+  {% block title %}<title>UCR Virtual Microscope</title>{% endblock %}
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+      
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <meta name="robots" content="NONE,NOARCHIVE" />
+      
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap -->
+    <link href="{% static 'VMapp/vendor/bootstrap/css/bootstrap.min.css'%}" rel="stylesheet">
+
+    <!-- Fonts -->
+  
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i" rel="stylesheet">
+    
+
+  <!-- Styles -->
+  <link href="{% static '/VMapp/css/gestion.css'%}" rel="stylesheet">
+    
+
+  
+
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="  crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+
+
+
+<style>
+  html, body {
+      height: 100%;
+  }
+  .cont {
+  width: 100%;
+  height: 100%;
+  overflow:auto;
+}
+</style>
+  <!-- Add additional CSS in static file -->
+
+<script type="text/javascript">
+    $(document).ready(function() {
+
+      var i = "{{slide.path}}";
+      var h = "{{slide.zoomI}}";
+      var j = "{{slide.zoomM}}";
+
+       var slide_url_format = "/media/slides/"+i+"/{z}/{y}/{x}.jpg";
+
+       var map = L.map('map', {
+           center: [0,0],
+           zoom: h
+       });
+
+       var layer =  L.tileLayer(slide_url_format, {
+           minZoom:2,
+           noWrap: true,
+           keepBuffer:3,
+           maxZoom:j
+       }).addTo(map);
+       map.attributionControl.setPrefix(false);
+       var miniMap = new L.Control.MiniMap(
+                    L.tileLayer(slide_url_format),
+                    { toggleDisplay: true }
+                );
+
+                // Agrega el minimapa al mapa principal
+        miniMap.addTo(map);
+       });
+   /* Get the documentElement (<html>) to display the page in fullscreen */
+   var elem = document.documentElement;
+   
+   /* View in fullscreen */
+
+</script>
+</head>
+
+<body style="background-color:rgb(235, 235, 235);">
+
+{% load static %}
+    
+<div class="cont" >
+
+<div id="map" class="sidebar-map" style="z-index:0;background-color:rgb(0, 0, 0);width:100%;height: 100%"></div>   
+
+<button style="position: absolute;bottom: 5%;right:5%;z-index:1;"  class="btn btn-dark js-tooltip" type="submit" onclick="location.href='{{ slide.get_absolute_url }}'">Retroceder</button>
+
+<script src="{% static 'VMapp//vendor/jquery/jquery.min.js'%}"></script>
+<script src="{% static 'VMapp//vendor/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
+</body>
+</html>

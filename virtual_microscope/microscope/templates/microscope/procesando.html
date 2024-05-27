@@ -1,0 +1,235 @@
+{% extends "generica.html" %}
+{% block content %}
+<style>
+.title-bar {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #c9c9c9;
+    padding-left: 40px;
+    padding-right: 40px;
+    margin-top: 25px ;
+}
+.title-bar-item,
+.title-bar-select {
+    /* flex: 1; */
+    display: inline-flex;
+    height: 40px;
+    display: flex;
+    /* align-items: center; */
+    justify-content: flex-start;
+    margin-right: 20px;
+    cursor: pointer;
+    padding: 3px;
+    color: #363636;
+    transition: background-color 0.3s; /* Transición de color al pasar el mouse */
+}
+.title-bar-select {
+    /* border-radius: 10px 10px 0 0; */
+    
+    border-bottom: 2px solid #2c2c2c;
+}
+
+/* .title-bar-dr {
+
+    color: #949494;
+    
+} */
+.content {
+    position: relative;
+    padding:20px 40px 0px 40px;
+    height: calc(100% - 130px);
+    width: 100%;
+    overflow-y: scroll;
+}
+.title-bar-item:hover {
+    border-bottom: 2px solid #a7a7a7;
+}
+
+
+
+.subir {
+    border: 1px solid #dddddd;
+    border-radius: 10px;
+    background-color: #ffffff;
+    margin: 20px auto;
+    width: 100%;
+    height: 95%;
+    padding: 0%;
+    /* box-shadow: 1px 1px 3px rgba(255, 255, 255, 0); */
+    /* padding: 5px 40px 5px 40px;  */
+  }
+  .modal {
+  display: none;
+  position: fixed;
+  z-index: 2;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-contenido {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  width: 60%;
+}
+.cerrar {
+  color: #aaaaaa;
+  float: right;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.content {
+    position: relative;
+    padding:20px 40px 0px 40px;
+    height: calc(100% - 130px);
+    width: 100%;
+    overflow-y: scroll;
+}
+.boton-cerrar {
+  padding: 8px 16px;
+  margin-right: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.boton-enviar {
+  padding: 8px 16px;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+@media (max-width: 768px) {
+    .subir {
+        border: 0px solid #ffffff;
+        border-radius: 0px;
+        margin: 0%;
+        width: 100%;
+        max-width: 768px;
+        height: 100%;
+        /* padding: 0%; */
+        /* box-shadow: 1px 1px 3px rgba(255, 255, 255, 0); */
+        /* padding: 5px 40px 5px 40px;  */
+    }
+    .container {
+        margin-top: 0 ;
+        max-width: 768px;
+    }
+    html, body{
+        background-color: #ffffff;
+    }
+}
+</style>
+
+<div class="subir container" >
+    <!-- <div class="title-bar">
+        <div class = 'title-bar-iz'  onclick="location.href='{% url 'upload_file' %}'">
+            
+                <h5 style="margin: 0;"  >Archivos</h1>
+           
+        </div>
+        <div class = 'title-bar-dr'>
+            <h5 style="margin: 0;">Procesando</h1>
+        </div>
+    </div> -->
+    <div class="title-bar">
+        
+        <div class = 'title-bar-item' onclick="location.href='{% url 'upload_file' %}'">
+            <h5 style="margin: 0;"  >Archivos</h1>
+        </div>
+        <div class = 'title-bar-select'>
+            
+            <h5 style="margin: 0;">Procesando</h5>
+       
+    </div>
+        <div class = 'title-bar-item' onclick="location.href='{% url 'activity_log' %}'">
+            <h5 style="margin: 0;"  >Historial</h1>
+        </div>
+    </div>
+    <div class="content">
+        <!-- <div style="height: 49%;overflow-y: scroll;"> -->
+        <div style="margin: 0% 0% 3% 0%; padding-top: 60px; padding-right: 0px;height: calc(100% - 85px);overflow-y: scroll;">
+            <hr style="margin: 0;">
+            {%for slide in listSlide%}
+            <div style="width: 74%;display: inline-block;height: 30px;">
+                <h4 style="display: inline-block;">{{slide.name}}</h4>
+            </div>
+                <hr style="margin: 0;">
+            {%endfor%}
+        </div>
+    </div>
+    <!-- <div style="height: 35%;margin-bottom: 4%;overflow-y: scroll;border: 1px solid rgb(54, 54, 54);padding: 10px;">
+      
+        
+        <h5 style="color: #7c7c7c;margin-bottom: 10px;text-align: center;">Láminas con procesamiento fallido</h5>
+        {%for slide in listSlideError%}
+        <div style="width: 74%;display: inline-block;height: 30px;">
+            <h4 type="submit" onclick="location.href='/delete/{{slide.id}}'" style="display: inline-block;color: #740000;">{{slide.name}}!</h4>
+        </div>
+        {%endfor%}
+    </div> -->
+
+        <div style = "position: relative;bottom: 5 px;margin: 1% 3% 1% 3%;border-radius:10px; background-color:rgba(221, 220, 220, 0.8);width:94%">
+            <button style=" width: 100%;" class="btn btn-outline-dark  btn-block js-tooltip" type="submit" onclick="location.href='{% url 'Catalogo' %}'">Volver al catálogo</button>
+        </div>
+
+        
+        {% if archivo_subido %}
+            <div class="alert alert-success mt-3">
+                Archivo subido exitosamente.
+            </div>
+        {% endif %}
+        
+        </div>
+        <div id="miModal" class="modal">
+            <div class="modal-contenido">
+            <span class="cerrar cerrarModal" >&times;</span>
+                <h2>Nueva Lámina Virtual</h2>
+            <form method="POST" > 
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input  type="hidden" name="option" value='0'>
+                    <input id="slide" type="hidden" name="slide" value='0'>
+                    <!-- <div style="position: relative; left: 2%;" class="botones">
+                        <button type="submit" class="boton-enviar btn-primary">crear</button>
+                    
+                        <button type="button" class="boton-cerrar btn-danger cerrarModal" >Cancelar</button>
+                    </div> -->
+            </form>
+            </div>
+        </div>
+        <script>
+            // var abrirModal = document.getElementById('abrirModal');
+            var modal = document.getElementById('miModal');
+            var slide = document.getElementById('slide');
+            var abrirModal = document.querySelectorAll('.abrirModal');
+            var cerrarModal = document.querySelectorAll('.cerrarModal');
+
+            // Agrega un controlador de eventos para cada botón de edición
+            abrirModal.forEach(function(boton) {
+                boton.addEventListener('click', function() {
+                    // Obtiene el valor del atributo data-id del botón
+                    var id = boton.getAttribute('id');
+
+                    slide.value = id;
+                    modal.style.display = 'block';
+                    // option.value = '0';
+                });
+            });
+            cerrarModal.forEach(function(boton) {
+                boton.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                    // option.value = '1';
+                });
+            });
+            
+            
+        </script>
+    
+{% endblock %}

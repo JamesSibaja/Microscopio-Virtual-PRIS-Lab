@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: microscopio
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: microVirtual
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - mynetwork
+
+  web:
+    build:
+      context: .
+    command: daphne -u /tmp/daphne.sock virtual_microscope.asgi:application
+    volumes:
+      - ./virtual_microscope:/app
+    depends_on:
+      - db
+      - redis
+    environment:
+      DEBUG: "False"
+      DJANGO_DB_HOST: db
+    networks:
+      - mynetwork
+
+  celery:
+    build:
+      context: .
+    command: /bin/bash -c ". /app/venv/bin/activate && celery -A virtual_microscope worker -l INFO"
+    volumes:
+      - ./virtual_microscope:/app
+    depends_on:
+      - redis 
+      - web
+    env_file:
+      - .env
+    networks:
+      - mynetwork
+
+  redis:
+    image: redis:latest
+    networks:
+      - mynetwork
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.prod.conf:/etc/nginx/conf.d/default.conf
+      - ./virtual_microscope:/app
+    depends_on:
+      - web
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge
+
+volumes:
+  db_data:
+
+
+# Sphinx==7.2.6 
+# sphinx-rtd-theme==2.0.0

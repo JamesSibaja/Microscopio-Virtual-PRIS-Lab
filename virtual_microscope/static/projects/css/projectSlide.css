@@ -1,0 +1,142 @@
+#custom-button-container {
+    position: absolute;
+    bottom: 365px;
+    right: 12px;
+    z-index: 1000;
+}
+
+.custom-big-image-button {
+    font-size: 20px; /* Cambia el tamaño del texto (ícono) */
+    border-radius: 5px; /* Agrega esquinas redondeadas */
+}
+.custom-big-image-button:hover {
+    cursor: pointer;
+}
+/* @media print {
+  
+  body {
+    margin: 0;
+    padding: 0;
+    background: none;
+  }
+} */
+.leaflet-control-measure .results .group:first-child {
+    
+    height: 0;
+    color: rgb(0,0,0,0);
+}
+
+.lastpoint .heading{
+    color: rgb(0,0,0,0);
+    margin-top: 100px;
+}
+#custom-button-container2 {
+    position: absolute;
+    bottom: 400px;
+    right: 12px;
+    z-index: 1000;
+}
+
+#custom-button {
+    display: block;
+    width: 30px;
+    height: 30px; /* Agrega la ruta de tu icono personalizado */
+    background-size: 26px 26px;
+    background-repeat: no-repeat;
+    background-color: white;
+    border: 1px solid #ddd;
+    color: #4d4d4d;
+}
+
+#custom-button:hover {
+    background-color: rgb(243, 243, 243);
+    cursor: pointer;
+}
+.has-overflow {
+    /* Aplica los estilos que desees para el contenedor con overflow aquí */
+    /* Cambia el color de fondo */
+    pointer-events: auto;
+}
+
+#colorPicker:hover {
+    cursor: pointer;
+}
+
+.titulo-y-botones {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+.elemento {
+    pointer-events: auto;
+}
+.botones-opciones {
+    display: flex;
+    position: absolute;
+    right: 2%;
+}
+
+.btn-opcion {
+    display: inline-block;
+    border-radius: 10px;
+    color: #333;
+    text-decoration: none;
+    /* transition: background-color 0.3s, color 0.3s; */
+}
+
+.btn-opcion2 {
+    display: inline-block;
+    border-radius: 10px;
+    color: #ffffff;
+    text-decoration: none;
+    /* transition: background-color 0.3s, color 0.3s; */
+}
+.btn-opcion2:hover {
+    color: #f5b01b;
+}
+
+.btn-opcion:hover {
+    color: #f5b01b;
+}
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-contenido {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  width: 60%;
+}
+
+.cerrar {
+  color: #aaaaaa;
+  float: right;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.boton-cerrar {
+  padding: 8px 16px;
+  margin-right: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.boton-enviar {
+  padding: 8px 16px;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
