@@ -1,11 +1,11 @@
-# virtual_microscope/media/archivo/*
-# virtual_microscope/media/slides/*
+virtual_microscope/media/archivo/*
+virtual_microscope/media/slides/*
 **/migrations/*
 **/venv/*
 env/
 
-# !virtual_microscope/media/archivo/
-# !virtual_microscope/media/slides/
+!virtual_microscope/media/archivo/
+!virtual_microscope/media/slides/
 !**/__init__.py
 virtual_microscope/docs
 
