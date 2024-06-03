@@ -3,10 +3,10 @@
 # Variables
 DOMAIN ?= $(shell read -p "Ingresa tu dominio (deja vacío para configuración local): " domain && echo $$domain)
 EMAIL ?= $(shell read -p "Ingresa tu correo electrónico para el certificado SSL: " email && echo $$email)
-MODE ?= $(shell read -p "¿Modo producción? (s/n): " mode && echo $$mode)
+PROD_MODE ?= $(shell read -p "¿Modo producción? (s/n): " mode && echo $$mode)
 
 # Convertir la respuesta del modo a local o producción
-MODE := $(if $(findstring s,$(MODE)),production,local)
+MODE := $(if $(findstring s,$(PROD_MODE)),production,local)
 
 # Establecer valores predeterminados
 DOMAIN := $(or $(DOMAIN),localhost)
@@ -36,6 +36,14 @@ setup:
 	# Crear superusuario
 	@docker compose exec gunicorn_vm python manage.py shell < scripts/create_superuser.py
 
+	# Solicitar y configurar certificados SSL si es producción
+ifneq ($(MODE),local)
+	make init-letsencrypt
+endif
+
+	# Iniciar la aplicación
+	make run
+
 init-letsencrypt:
 	./init-letsencrypt.sh $(DOMAIN) $(EMAIL)
 
@@ -53,6 +61,7 @@ migration:
 clean:
 	docker compose down
 	rm -rf docs/
+
 
 
 
