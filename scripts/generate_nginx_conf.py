@@ -1,4 +1,6 @@
 import sys
+import os
+import subprocess
 
 def generate_nginx_conf(mode, domain):
     if mode == 'local':
@@ -46,6 +48,16 @@ def generate_nginx_conf(mode, domain):
         }}
         """
     elif mode == 'prod':
+        # Ensure the directory for DH params exists
+        if not os.path.exists('/etc/ssl/certs'):
+            os.makedirs('/etc/ssl/certs')
+
+        # Generate Diffie-Hellman parameters if they don't exist
+        dhparam_path = '/etc/ssl/certs/dhparam.pem'
+        if not os.path.exists(dhparam_path):
+            print("### Generating Diffie-Hellman parameters ###")
+            subprocess.run(['openssl', 'dhparam', '-out', dhparam_path, '2048'])
+
         conf = f"""
         client_max_body_size 150G;
         proxy_read_timeout 600s;
@@ -151,3 +163,4 @@ if __name__ == '__main__':
         mode = sys.argv[1]
         domain = sys.argv[2]
         generate_nginx_conf(mode, domain)
+
