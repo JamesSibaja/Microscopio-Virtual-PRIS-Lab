@@ -5,7 +5,7 @@ setup:
 	bash setup.sh
 
 init-letsencrypt:
-	./init-letsencrypt.sh $(DOMAIN) $(EMAIL)
+	sudo ./init-letsencrypt.sh $(DOMAIN) $(EMAIL)
 
 run:
 	export DJANGO_SETTINGS_MODULE=settings
