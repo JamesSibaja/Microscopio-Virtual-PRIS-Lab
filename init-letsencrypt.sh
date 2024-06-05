@@ -54,7 +54,8 @@ docker compose run --rm --entrypoint "\
     $domain_args \
     --rsa-key-size $rsa_key_size \
     --agree-tos \
-    --force-renewal" certbot
+    --force-renewal \
+    -v" certbot
 echo
 
 echo "### Reloading nginx ..."
