@@ -45,7 +45,7 @@ def generate_nginx_conf(mode, domain):
             }}
         }}
         """
-    elif mode == 'production':
+    elif mode == 'prod':
         conf = f"""
         client_max_body_size 150G;
         proxy_read_timeout 600s;

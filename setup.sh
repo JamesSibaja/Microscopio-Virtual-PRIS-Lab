@@ -7,7 +7,7 @@ read -p "Ingresa tu correo electrónico para el certificado SSL: " email
 
 # Determinar el modo
 if [[ $mode == "s" || $mode == "S" ]]; then
-    MODE="production"
+    MODE="prod"
 else
     MODE="local"
 fi
@@ -48,7 +48,7 @@ sudo docker compose exec gunicorn_vm python manage.py migrate
 sudo docker compose exec gunicorn_vm python manage.py shell < scripts/create_superuser.py
 
 # Solicitar y configurar certificados SSL si es producción
-if [[ $MODE == "production" ]]; then
+if [[ $MODE == "prod" ]]; then
     ./init-letsencrypt.sh $DOMAIN $EMAIL
 fi
 
