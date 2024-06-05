@@ -7,7 +7,6 @@ setup:
 	sudo chown www-data:www-data /var/www/certbot
 	sudo chmod 755 /var/www/certbot
 	sudo mkdir -p ./letsencrypt/www
-	sudo chown -R $USER:$USER ./letsencrypt
 	sudo chmod -R 755 ./letsencrypt
 	bash setup.sh
 
