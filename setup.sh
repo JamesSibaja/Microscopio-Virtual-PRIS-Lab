@@ -49,7 +49,7 @@ sudo docker compose exec gunicorn_vm python manage.py shell < scripts/create_sup
 
 # Solicitar y configurar certificados SSL si es producción
 if [[ $MODE == "prod" ]]; then
-    sudo ./init-letsencrypt.sh $DOMAIN $EMAIL
+    ./init-letsencrypt.sh $DOMAIN $EMAIL
 fi
 
 # Iniciar la aplicación
