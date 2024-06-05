@@ -1,5 +1,6 @@
 virtual_microscope/media/archivo/*
 virtual_microscope/media/slides/*
+virtual_microscope/media/profile_images/*
 **/migrations/*
 **/venv/*
 env/
