@@ -8,6 +8,8 @@ setup:
 	@sudo chmod 755 /var/www/certbot
 	@sudo mkdir -p ./letsencrypt/www
 	@sudo chmod -R 755 ./letsencrypt
+	@sudo mkdir -p letsencrypt/live/demo-js.com/
+	sudo chmod -R 755 letsencrypt/live/
 	@bash setup.sh
 
 init-letsencrypt:
