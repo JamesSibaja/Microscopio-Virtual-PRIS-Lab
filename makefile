@@ -7,10 +7,10 @@ setup: fix-docker-permissions
 	@sudo chmod 755 /var/www/certbot
 	@sudo mkdir -p ./letsencrypt/www
 	@sudo chmod -R 755 ./letsencrypt/www
-	@sudo mkdir -p ./letsencrypt/www/certbot
-	@sudo chmod 755 ./letsencrypt/www/certbot
-	@sudo mkdir -p letsencrypt/live/
-	sudo chmod -R 755 letsencrypt/live/
+	@sudo mkdir -p letsencrypt/conf
+	sudo chmod -R 755 letsencrypt/conf
+	@sudo mkdir -p letsencrypt/conf/live/
+	sudo chmod -R 755 letsencrypt/conf/live/
 	@bash setup.sh
 
 init-letsencrypt:

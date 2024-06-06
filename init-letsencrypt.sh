@@ -18,9 +18,9 @@ fi
 # Create a dummy certificate if needed
 data_path="./letsencrypt"
 
-if [ ! -e "$data_path/live/$domains/privkey.pem" ]; then
+if [ ! -e "$data_path/conf/live/$domains/privkey.pem" ]; then
   echo "### Creating dummy certificate for $domains ..."
-  path="$data_path/live/$domains"
+  path="$data_path/conf/live/$domains"
   mkdir -p "$path"
   docker compose run --rm --entrypoint "\
     openssl req -x509 -nodes -newkey rsa:4096 -days 1\

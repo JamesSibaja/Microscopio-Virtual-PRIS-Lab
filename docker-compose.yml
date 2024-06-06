@@ -85,7 +85,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./letsencrypt:/etc/letsencrypt
+      - ./letsencrypt/conf:/etc/letsencrypt
       - ./virtual_microscope:/app
       - ./letsencrypt/www:/var/www/certbot
     depends_on:
@@ -97,7 +97,7 @@ services:
   certbot:
     image: certbot/certbot
     volumes:
-      - ./letsencrypt:/etc/letsencrypt
+      - ./letsencrypt/conf:/etc/letsencrypt
       - ./letsencrypt/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do sleep 6h & wait $${!}; certbot renew; done'"
 
