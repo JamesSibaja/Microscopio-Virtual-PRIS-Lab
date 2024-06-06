@@ -9,13 +9,13 @@ staging=0 # Set to 1 if you're testing your setup to avoid hitting request limit
 if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ]; then
   echo "### Downloading recommended TLS parameters ..."
   mkdir -p "$data_path/conf"
-  curl -s https://raw.githubusercontent.com/certbot/certbot/v1.11.0/certbot/certbot/options-ssl-nginx.conf > "$data_path/conf/options-ssl-nginx.conf"
+  curl -s https://raw.githubusercontent.com/certbot/certbot/v2.11.0/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf > "$data_path/conf/options-ssl-nginx.conf"
   echo
 fi
 
 if [ ! -e "$data_path/conf/ssl-dhparams.pem" ]; then
   echo "### Downloading ssl-dhparams.pem ..."
-  curl -s https://raw.githubusercontent.com/certbot/certbot/v1.11.0/certbot/certbot/ssl-dhparams.pem > "$data_path/conf/ssl-dhparams.pem"
+  curl -s https://raw.githubusercontent.com/certbot/certbot/v2.11.0/certbot/certbot/ssl-dhparams.pem > "$data_path/conf/ssl-dhparams.pem"
   echo
 fi
 
@@ -65,3 +65,4 @@ echo
 
 echo "### Reloading nginx ..."
 docker compose exec nginx_vm nginx -s reload
+
