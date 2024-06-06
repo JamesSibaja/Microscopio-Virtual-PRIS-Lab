@@ -1,36 +1,41 @@
-.PHONY: setup run init-letsencrypt clean
+.PHONY: setup run init-letsencrypt clean fix-docker-permissions
 
-setup:
-	# Ejecutar script de configuración
-	@sudo chmod +x ./init-letsencrypt.sh
-	@sudo mkdir -p /var/www/certbot
-	@sudo chmod 755 /var/www/certbot
-	@sudo mkdir -p ./letsencrypt/www
-	@sudo chmod -R 755 ./letsencrypt/www
-	@sudo mkdir -p ./letsencrypt/www/certbot
-	@sudo chmod 755 ./letsencrypt/www/certbot
-	@sudo mkdir -p letsencrypt/live/
-	sudo chmod -R 755 letsencrypt/live/
-	@bash setup.sh
+setup: fix-docker-permissions
+    # Ejecutar script de configuración
+    @sudo chmod +x ./init-letsencrypt.sh
+    @sudo mkdir -p /var/www/certbot
+    @sudo chmod 755 /var/www/certbot
+    @sudo mkdir -p ./letsencrypt/www
+    @sudo chmod -R 755 ./letsencrypt/www
+    @sudo mkdir -p ./letsencrypt/www/certbot
+    @sudo chmod 755 ./letsencrypt/www/certbot
+    @sudo mkdir -p letsencrypt/live/
+    sudo chmod -R 755 letsencrypt/live/
+    @bash setup.sh
 
 init-letsencrypt:
-	sudo chmod +x ./init-letsencrypt.sh
-	./init-letsencrypt.sh $(DOMAIN) $(EMAIL)
+    sudo chmod +x ./init-letsencrypt.sh
+    ./init-letsencrypt.sh $(DOMAIN) $(EMAIL)
 
 run:
-	export DJANGO_SETTINGS_MODULE=settings
-	docker compose up --no-build --no-recreate redis_vm db_vm gunicorn_vm daphne_vm celery_vm nginx_vm
+    export DJANGO_SETTINGS_MODULE=settings
+    docker compose up --no-build --no-recreate redis_vm db_vm gunicorn_vm daphne_vm celery_vm nginx_vm
 
 migration:
-	export DJANGO_SETTINGS_MODULE=virtual_microscope.virtual_microscope.settings
-	docker compose up --no-build -d --no-recreate redis_vm db_vm gunicorn_vm daphne_vm celery_vm nginx_vm
-	docker compose exec gunicorn_vm python manage.py makemigrations
-	docker compose exec gunicorn_vm python manage.py migrate
-	docker compose down
+    export DJANGO_SETTINGS_MODULE=virtual_microscope.virtual_microscope.settings
+    docker compose up --no-build -d --no-recreate redis_vm db_vm gunicorn_vm daphne_vm celery_vm nginx_vm
+    docker compose exec gunicorn_vm python manage.py makemigrations
+    docker compose exec gunicorn_vm python manage.py migrate
+    docker compose down
 
 clean:
-	docker compose down
-	rm -rf docs/
+    docker compose down
+    rm -rf docs/
+
+fix-docker-permissions:
+    @sudo usermod -aG docker $$(whoami)
+    @sudo chmod 666 /var/run/docker.sock
+
 
 # .PHONY: setup run
 
