@@ -15,7 +15,7 @@ setup: fix-docker-permissions
 
 init-letsencrypt:
 	sudo chmod +x ./init-letsencrypt.sh
-	./init-letsencrypt.sh $(DOMAIN) $(EMAIL)
+	./init-letsencrypt.sh $(DOMAIN) $(EMAIL) -v
 
 run:
 	export DJANGO_SETTINGS_MODULE=settings
