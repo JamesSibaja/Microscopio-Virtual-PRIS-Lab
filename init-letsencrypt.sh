@@ -16,17 +16,20 @@ if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ] || [ ! -e "$data_path/conf/
 fi
 
 # Create a dummy certificate if needed
-if [ ! -e "$data_path/conf/live/$domains/privkey.pem" ]; then
+data_path="./letsencrypt"
+
+if [ ! -e "$data_path/live/$domains/privkey.pem" ]; then
   echo "### Creating dummy certificate for $domains ..."
-  path="/etc/letsencrypt/live/$domains"
-  mkdir -p "$data_path/conf/live/$domains"
+  path="$data_path/live/$domains"
+  mkdir -p "$path"
   docker compose run --rm --entrypoint "\
     openssl req -x509 -nodes -newkey rsa:4096 -days 1\
-      -keyout '$path/privkey.pem' \
-      -out '$path/fullchain.pem' \
+      -keyout '/etc/letsencrypt/live/$domains/privkey.pem' \
+      -out '/etc/letsencrypt/live/$domains/fullchain.pem' \
       -subj '/CN=localhost'" certbot
   echo
 fi
+
 
 # Start nginx
 echo "### Starting nginx ..."
