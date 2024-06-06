@@ -28,7 +28,7 @@ pip install -r requirements.txt
 python scripts/generate_nginx_conf.py $MODE $DOMAIN
 
 # Asegúrate de que los archivos de configuración existan
-if [[ ! -f nginxl.conf ]]; then
+if [[ ! -f nginx.conf ]]; then
     echo "Error: Los archivos de configuración de Nginx no se generaron correctamente."
     exit 1
 fi
