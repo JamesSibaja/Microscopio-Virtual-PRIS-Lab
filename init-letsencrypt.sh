@@ -6,11 +6,17 @@ data_path="./letsencrypt"
 email=$2
 staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
-if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ] || [ ! -e "$data_path/conf/ssl-dhparams.pem" ]; then
+if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ]; then
   echo "### Downloading recommended TLS parameters ..."
   mkdir -p "$data_path/conf"
-  curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot/ssl-dhparams.pem > "$data_path/conf/ssl-dhparams.pem"
-  curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot/options-ssl-nginx.conf > "$data_path/conf/options-ssl-nginx.conf"
+  curl -s https://raw.githubusercontent.com/certbot/certbot/v1.11.0/certbot/certbot/options-ssl-nginx.conf > "$data_path/conf/options-ssl-nginx.conf"
+  echo
+fi
+
+if [ ! -e "$data_path/conf/ssl-dhparams.pem" ]; then
+  echo "### Generating Diffie-Hellman parameters ..."
+  mkdir -p "$data_path/conf"
+  openssl dhparam -out "$data_path/conf/ssl-dhparams.pem" 2048
   echo
 fi
 

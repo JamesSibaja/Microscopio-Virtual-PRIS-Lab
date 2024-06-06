@@ -2,13 +2,13 @@
 
 setup:
 	# Ejecutar script de configuración
-	sudo chmod +x ./init-letsencrypt.sh
-	sudo mkdir -p /var/www/certbot
-	sudo chown www-data:www-data /var/www/certbot
-	sudo chmod 755 /var/www/certbot
-	sudo mkdir -p ./letsencrypt/www
-	sudo chmod -R 755 ./letsencrypt
-	bash setup.sh
+	@sudo chmod +x ./init-letsencrypt.sh
+	@sudo mkdir -p /var/www/certbot
+	@sudo chown www-data:www-data /var/www/certbot
+	@sudo chmod 755 /var/www/certbot
+	@sudo mkdir -p ./letsencrypt/www
+	@sudo chmod -R 755 ./letsencrypt
+	@bash setup.sh
 
 init-letsencrypt:
 	sudo chmod +x ./init-letsencrypt.sh
