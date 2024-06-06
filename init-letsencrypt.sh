@@ -14,9 +14,8 @@ if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ]; then
 fi
 
 if [ ! -e "$data_path/conf/ssl-dhparams.pem" ]; then
-  echo "### Generating Diffie-Hellman parameters ..."
-  mkdir -p "$data_path/conf"
-  openssl dhparam -out "$data_path/conf/ssl-dhparams.pem" 2048
+  echo "### Downloading ssl-dhparams.pem ..."
+  curl -s https://raw.githubusercontent.com/certbot/certbot/v1.11.0/certbot/certbot/ssl-dhparams.pem > "$data_path/conf/ssl-dhparams.pem"
   echo
 fi
 
