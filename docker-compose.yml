@@ -88,6 +88,7 @@ services:
       - ./letsencrypt/conf:/etc/letsencrypt
       - ./virtual_microscope:/app
       - ./letsencrypt/www:/var/www/certbot
+      - /etc/ssl/certs/dhparam.pem:/etc/ssl/certs/dhparam.pem
     depends_on:
       - daphne_vm
       - gunicorn_vm

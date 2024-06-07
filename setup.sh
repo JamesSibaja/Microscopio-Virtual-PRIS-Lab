@@ -36,6 +36,11 @@ fi
 # Exportar la variable de modo para docker-compose
 export MODE=$MODE
 
+if [ ! -f /etc/ssl/certs/dhparam.pem ]; then
+    echo "### Generating dhparam.pem file ..."
+    sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
+fi
+
 # Construir imágenes Docker
 sudo docker compose build --build-arg MODE=$MODE redis_vm db_vm gunicorn_vm daphne_vm celery_vm nginx_vm
 
