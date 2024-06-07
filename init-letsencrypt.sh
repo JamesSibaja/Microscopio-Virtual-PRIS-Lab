@@ -33,7 +33,7 @@ fi
 
 # Start nginx
 echo "### Starting nginx ..."
-docker compose up --force-recreate  nginx_vm
+docker compose up --force-recreate -d nginx_vm
 echo
 
 # Delete the dummy certificate
