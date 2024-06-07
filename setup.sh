@@ -45,7 +45,8 @@ sudo docker compose exec gunicorn_vm python manage.py makemigrations
 sudo docker compose exec gunicorn_vm python manage.py migrate
 
 # Crear superusuario
-sudo docker compose exec gunicorn_vm python manage.py shell < scripts/create_superuser.py
+sudo docker compose exec gunicorn_vm python manage.py shell -c "import sys; exec(sys.stdin.read())" < scripts/create_superuser.py
+
 
 # Solicitar y configurar certificados SSL si es producción
 if [[ $MODE == "prod" ]]; then
