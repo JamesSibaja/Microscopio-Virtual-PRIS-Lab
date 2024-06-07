@@ -11,7 +11,7 @@ if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ] || [ ! -e "$data_path/conf/
   echo "### Downloading recommended TLS parameters ..."
   mkdir -p "$data_path/conf"
   curl -s https://raw.githubusercontent.com/certbot/certbot/v2.11.0/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf > "$data_path/conf/options-ssl-nginx.conf"
-  curl -s https://raw.githubusercontent.com/certbot/certbot/v2.11.0/certbot/certbot/ssl-dhparams.pem > "$data_path/conf/ssl-dhparams.pem"
+  curl -s https://raw.githubusercontent.com/certbot/certbot/v1.11.0/certbot/certbot/ssl-dhparams.pem > "$data_path/conf/ssl-dhparams.pem"
   echo
 fi
 
@@ -19,8 +19,11 @@ fi
 echo "### Cleaning up any existing certificates for $domains ..."
 docker compose run --rm --entrypoint "\
   rm -Rf /etc/letsencrypt/live/$domains && \
+  rm -Rf /etc/letsencrypt/live/${domains}-0001 && \
   rm -Rf /etc/letsencrypt/archive/$domains && \
-  rm -Rf /etc/letsencrypt/renewal/$domains.conf" certbot
+  rm -Rf /etc/letsencrypt/archive/${domains}-0001 && \
+  rm -Rf /etc/letsencrypt/renewal/$domains.conf && \
+  rm -Rf /etc/letsencrypt/renewal/${domains}-0001.conf" certbot
 echo
 
 # Create a dummy certificate if needed
@@ -45,8 +48,11 @@ echo
 echo "### Deleting dummy certificate for $domains ..."
 docker compose run --rm --entrypoint "\
   rm -Rf /etc/letsencrypt/live/$domains && \
+  rm -Rf /etc/letsencrypt/live/${domains}-0001 && \
   rm -Rf /etc/letsencrypt/archive/$domains && \
-  rm -Rf /etc/letsencrypt/renewal/$domains.conf" certbot
+  rm -Rf /etc/letsencrypt/archive/${domains}-0001 && \
+  rm -Rf /etc/letsencrypt/renewal/$domains.conf && \
+  rm -Rf /etc/letsencrypt/renewal/${domains}-0001.conf" certbot
 echo
 
 # Request Let's Encrypt certificate
@@ -76,3 +82,4 @@ echo
 # Reload nginx
 echo "### Reloading nginx ..."
 docker compose exec nginx_vm nginx -s reload
+
