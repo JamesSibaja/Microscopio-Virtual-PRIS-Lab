@@ -74,32 +74,6 @@ def generate_nginx_conf(mode, domain):
             listen 80;
             server_name {domain};
 
-            location / {{
-                proxy_pass http://django_app;
-                proxy_http_version 1.1;
-                proxy_set_header Upgrade $http_upgrade;
-                proxy_set_header Connection $http_upgrade;
-                proxy_set_header Host $host;
-                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                proxy_redirect off;
-            }}
-
-            location /ws/ {{
-                proxy_pass http://daphne_app;
-                proxy_http_version 1.1;
-                proxy_set_header Upgrade $http_upgrade;
-                proxy_set_header Connection "upgrade";
-                proxy_set_header Host $host;
-            }}
-
-            location /static/ {{
-                alias /app/static/;
-            }}
-
-            location /media/ {{
-                alias /app/media/;
-            }}
-
             location /.well-known/acme-challenge/ {{
                 root /var/www/certbot;
             }}
@@ -163,4 +137,3 @@ if __name__ == '__main__':
         mode = sys.argv[1]
         domain = sys.argv[2]
         generate_nginx_conf(mode, domain)
-
