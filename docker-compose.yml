@@ -35,6 +35,7 @@ services:
       dockerfile: Dockerfile.gunicorn
     volumes:
       - ./virtual_microscope:/app
+      - ./scripts:/app/scripts
     expose:
       - "8765"
     depends_on:

@@ -309,19 +309,18 @@
           </div>
         {%endfor%}
       {%else%}
-        {%for slide in catalogo%}
-          <div href="#"  id="{{slide.id}}"  class="product abrirModal">
-            <div class="product-image-container">
-                <img src="{{slide.image.url}}" alt="{{ product.name }}" class="product-image">
-                <h1 class="edit-text">Editar</h1>
-            </div>
-            <div class="product-description">
-                <h2 class="product-name">{{slide.name}}</h2>
-                <p style="font-size: 1rem">{{slide.description}}</p>
-            </div>
+      {% for slide in catalogo %}
+      <div href="#" id="{{ slide.id }}" class="product abrirModal" data-id="{{ slide.id }}">
+          <div class="product-image-container">
+              <img src="{{ slide.image.url }}" alt="{{ slide.name }}" class="product-image">
+              <h1 class="edit-text">Editar</h1>
           </div>
-
-        {%endfor%}
+          <div class="product-description">
+              <h2 class="product-name">{{ slide.name }}</h2>
+              <p style="font-size: 1rem">{{ slide.description }}</p>
+          </div>
+      </div>
+      {% endfor %}
       {%endif%}
     </div>
     
@@ -332,48 +331,56 @@
 </div>
 <div id="miModal" class="modal">
   <div class="modal-contenido">
-  <span class="cerrar" id="cerrarModal">&times;</span>
-  {%if optionNum == 1%}
-      <h2>Editar {{mapSlide.name}}</h2>
-  {%else%}
-      <h2>Nueva Lámina Virtual</h2>
-  {%endif%}
-  <form method="POST" > 
-      {% csrf_token %}
-      {{ form.as_p }}
-      <!-- Otros campos de formulario... -->
-   
-              <button type="submit" class="boton-enviar btn-primary">Guardar</button>
-              <button type="button" class="boton-cerrar btn-danger " id="cerrarModal2">Cancelar</button>
-          </div>
-  </form>
+      <span class="cerrar" id="cerrarModal">&times;</span>
+      <h2 id="modal-title">Editar</h2>
+      <form method="POST" id="editForm">
+          {% csrf_token %}
+          <input type="hidden" name="slide_id" id="slide_id">
+          {{ form.as_p }}
+          <button type="submit" class="boton-enviar btn-primary">Guardar</button>
+          <button type="button" class="boton-cerrar btn-danger" id="cerrarModal2">Cancelar</button>
+      </form>
   </div>
 </div>
 <script>
-  var abrirModal = document.querySelectorAll('.abrirModal');
-  var modal = document.getElementById('miModal');
-  var cerrarModal = document.getElementById('cerrarModal');
-   abrirModal.forEach(function(boton) {
-        boton.addEventListener('click', function() {
-            // Obtiene el valor del atributo data-id del botón
-            var id = boton.getAttribute('id');
-
-            // slide.value = id;
-            modal.style.display = 'block';
-            // option.value = '0';
-        });
-    });
-    cerrarModal.forEach(function(boton) {
-        boton.addEventListener('click', function() {
-            modal.style.display = 'none';
-            // option.value = '1';
-        });
-    });
-// $(document).ready(function() {
-    
-
-// });  
-</script>
+  document.addEventListener('DOMContentLoaded', function () {
+      var abrirModal = document.querySelectorAll('.abrirModal');
+      var modal = document.getElementById('miModal');
+      var cerrarModal = document.getElementById('cerrarModal');
+      var cerrarModal2 = document.getElementById('cerrarModal2');
+      var modalTitle = document.getElementById('modal-title');
+      var editForm = document.getElementById('editForm');
+  
+      abrirModal.forEach(function (boton) {
+          boton.addEventListener('click', function () {
+              var id = boton.getAttribute('data-id');
+              fetch('/get/slide/data/' + id)
+                  .then(response => response.json())
+                  .then(data => {
+                      modalTitle.textContent = 'Editar ' + data.name;
+                      document.getElementById('slide_id').value = data.id;
+                      document.getElementById('id_name').value = data.name;
+                      document.getElementById('id_description').value = data.description;
+                      modal.style.display = 'block';
+                  });
+          });
+      });
+  
+      cerrarModal.addEventListener('click', function () {
+          modal.style.display = 'none';
+      });
+  
+      cerrarModal2.addEventListener('click', function () {
+          modal.style.display = 'none';
+      });
+  
+      window.addEventListener('click', function (event) {
+          if (event.target == modal) {
+              modal.style.display = 'none';
+          }
+      });
+  });
+  </script>
 {% endblock %}
 
  <!-- <tr class="btn-catalogo" onclick="location.href='{{ slide.get_absolute_url }}'">

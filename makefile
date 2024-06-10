@@ -8,9 +8,10 @@ setup: fix-docker-permissions
 	@sudo mkdir -p ./letsencrypt/www
 	@sudo chmod -R 755 ./letsencrypt/www
 	@sudo mkdir -p letsencrypt/conf
-	sudo chmod -R 755 letsencrypt/conf
+	@sudo chmod -R 755 letsencrypt/conf
 	@sudo mkdir -p letsencrypt/conf/live/
-	sudo chmod -R 755 letsencrypt/conf/live/
+	@sudo chmod -R 755 letsencrypt/conf/live/
+
 	@bash setup.sh
 
 init-letsencrypt:

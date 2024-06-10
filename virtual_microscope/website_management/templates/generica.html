@@ -23,7 +23,8 @@
   
     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap" rel="stylesheet"> 
     <link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i" rel="stylesheet">
-    
+    <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+
 
   <!-- Styles -->
   <link href="{% static 'css/gestion.css'%}" rel="stylesheet">
@@ -88,7 +89,9 @@
     background-size: cover;
   }
   .container {
-      height: 100%;
+      height: auto;
+      min-height:100;
+      max-width: 1300px;
       background: #f0e68c;
   }
   .video-container {
@@ -199,25 +202,27 @@
           </div>
           <div class="col-sm-2 col-lg-1 "></div>
         </nav> -->
-
-        <nav class="navbar navbar-expand-md sticky-top navbar-dark" style="background-color:rgb(11, 24, 52); box-shadow: 0px 2px 5px #3b3b3b; margin-left: auto; margin-right: auto;">
-          <div class="container" style="background-color: #00000000;">
-              <a class="navbar-brand" href="#">
-                  <img src="{% static 'img/prislab.png' %}" alt="Logo" style="max-height: 30px;">
+<!-- 
+        <nav class="navbar navbar-expand-md sticky-top navbar-dark" style="background-color:rgb(11, 24, 52); box-shadow: 0px 2px 5px #3b3b3b; margin-left: auto; margin-right: auto;"> -->
+        
+          <nav class="navbar navbar-expand-md sticky-top navbar-dark" style="background-color:rgb(11, 24, 52);margin-left: auto; margin-right: auto;padding-top: 3px;padding-bottom: 3px">  
+          <div class="container" style="max-width:100%;background-color: #00000000;">
+              <a class="navbar-brand"  href="#">
+                  <img src="{% static 'img/prislab.png' %}" alt="Logo" style="margin-bottom:  2px;max-height: 30px">
               </a>
               <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
                   <span class="navbar-toggler-icon"></span>
               </button>
               <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
                   <ul class="navbar-nav ml-auto text-center">
-                      <li class="nav-item {% if request.path == '/' %}active{% endif %}">
-                          <a class="nav-link" href="{% url 'Inicio' %}"><h5>Inicio</h5></a>
+                      <li class="nav-item {% if request.path == '/' %}active{% endif %}" style="display: flex; align-items: center;">
+                          <a class="nav-link" href="{% url 'Inicio' %}" ><h6  style="margin-bottom: 0;">Inicio</h6></a>
                       </li>
-                      <li class="nav-item {% if 'micro/' in request.path%}active{% endif %}{% if request.path == '/activity_log/'%}active{% endif %}{% if request.path == '/catalogo/'%}active{% endif %}{% if request.path == '/upload_file/'%}active{% endif %}{% if request.path == '/processing/'%}active{% endif %}">
-                          <a class="nav-link" href="{% url 'Catalogo' %}"><h5>Microscopio</h5></a>
+                      <li class="nav-item {% if 'micro/' in request.path%}active{% endif %}{% if request.path == '/activity_log/'%}active{% endif %}{% if request.path == '/catalogo/'%}active{% endif %}{% if request.path == '/upload_file/'%}active{% endif %}{% if request.path == '/processing/'%}active{% endif %}"  style="display: flex; align-items: center;">
+                          <a class="nav-link" href="{% url 'Catalogo' %}"><h6 style="margin-bottom: 0;">Microscopio</h6></a>
                       </li>
-                      <li class="nav-item {% if 'accounts/login/' in request.path %}active{% endif %}  {% if 'signup/' in request.path %}active{% endif %} {%if 'project' in request.path %}active{% endif %} {% if 'note' in request.path %}active{% endif %}">
-                          <a class="nav-link" href="{% url 'Login' %}"><h5>Personas</h5></a>
+                      <li class="nav-item {% if 'accounts/login/' in request.path %}active{% endif %}  {% if 'signup/' in request.path %}active{% endif %} {%if 'project' in request.path %}active{% endif %} {% if 'note' in request.path %}active{% endif %}"  style="display: flex; align-items: center;">
+                          <a class="nav-link" href="{% url 'Login' %}"><h6 style="margin-bottom: 0;">Personas</h6></a>
                       </li>
                   </ul>
               </div>

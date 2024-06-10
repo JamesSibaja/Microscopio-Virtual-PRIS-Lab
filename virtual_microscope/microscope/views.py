@@ -5,7 +5,7 @@ from django.views import generic
 from django.template import Template, context
 from django.db.models import Q, Count
 from django.core.paginator import Paginator
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.edit import FormView
 from .forms import  UploadFileForm, SlideForm
 from .tasks import convert_to_tiles
@@ -19,7 +19,8 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
 import shutil
-from django.shortcuts import redirect, get_object_or_404
+from celery.result import AsyncResult
+
 
 UPLOAD_DIR = os.path.join(settings.MEDIA_ROOT, 'archivo')
 
@@ -58,57 +59,11 @@ def upload_view(request):
 
         return JsonResponse({'message': 'Chunk recibido correctamente'})
     return JsonResponse({'error': 'Método no permitido'}, status=405)
-# def upload_view(request):
-#     if request.method == 'POST' and request.FILES['archivo']:
-#         archivo = request.FILES['archivo']
-#         # Verificar el tamaño del archivo
-#         if archivo.size <= settings.MAX_UPLOAD_SIZE:
-#             # Guardar el archivo en chunks
-#             ruta_temporal = 'archivo_temporal'
-#             with open(ruta_temporal, 'wb+') as destino:
-#                 for chunk in archivo.chunks():
-#                     destino.write(chunk)
-#             # Hacer algo con los chunks (por ejemplo, ensamblarlos)
-#             # Aquí ensamblamos los chunks en un solo archivo
-#             with open(ruta_temporal, 'rb') as archivo_chunks:
-#                 with open('archivo_final', 'wb') as archivo_final:
-#                     for chunk in archivo_chunks:
-#                         archivo_final.write(chunk)
-#             # Eliminar el archivo temporal de chunks
-#             os.remove(ruta_temporal)
-#             return JsonResponse({'message': 'Archivo subido correctamente'})
-#         else:
-#             return JsonResponse({'error': 'El tamaño del archivo excede el límite permitido'})
-#     else:
-#         return JsonResponse({'error': 'Se requiere un archivo para subir'})
-# from django.views.decorators.csrf import csrf_exempt
-# from filetransfers.api import serve_file
-# from myapp.models import MyModel
-# # import ftplib
-# # import paramiko
-
-
 
 
 # Configura la configuración de registro según tus necesidades
 logger = logging.getLogger('myapp.view') 
 # Create your views here.
-
-
-# def upload_ftp(request):
-#     if request.method == 'POST' and request.FILES:
-#         file = request.FILES['file']
-#         file_name = file.name
-#         try:
-#             ftp = ftplib.FTP(settings.FTP_HOST, settings.FTP_USER, settings.FTP_PASSWORD)
-#             with file.open() as f:
-#                 ftp.storbinary(f'STOR {file_name}', f)
-#             ftp.quit()
-#             return HttpResponse('Archivo cargado exitosamente')
-#         except Exception as e:
-#             return HttpResponseBadRequest(f'Error al cargar el archivo: {str(e)}')
-#     else:
-#         return HttpResponseBadRequest('Se esperaba un archivo en la solicitud')
 
 class micro(generic.DetailView):
     template_name = "microscope/microscopio.html"
@@ -117,6 +72,31 @@ class micro(generic.DetailView):
 class microfull(generic.DetailView):
     template_name = "microscope/microscopiofull.html"
     model = Slide
+
+def task_status(request, task_id):
+    task = AsyncResult(task_id)
+    if task.state == 'PENDING':
+        response = {
+            'state': task.state,
+            'current': 0,
+            'total': 1,
+        }
+    elif task.state != 'FAILURE':
+        response = {
+            'state': task.state,
+            'current': task.info.get('current', 0),
+            'total': task.info.get('total', 1),
+        }
+        if 'result' in task.info:
+            response['result'] = task.info['result']
+    else:
+        response = {
+            'state': task.state,
+            'current': 1,
+            'total': 1,
+            'error': str(task.info),  # Esto es el traceback
+        }
+    return JsonResponse(response)
 
 def catalogo(request):
     queryset = request.GET.get('buscar')
@@ -148,18 +128,27 @@ def catalogo(request):
 
     return render(request,"microscope/catalogo.html",{'catalogo':catalogo})
 
-def catalogo_edit(request,delete_edit):
+def catalogo_edit(request, delete_edit):
     queryset = request.GET.get('buscar')
-    # ver = request.GET.get('ver')
-    catalogo = Slide.objects.filter( assembled=True)
-    form = SlideForm(request.POST, request.FILES)
+    catalogo = Slide.objects.filter(assembled=True)
+    
+    if request.method == 'POST':
+        slide_id = request.POST.get('slide_id')
+        slide = get_object_or_404(Slide, id=slide_id)
+        form = SlideForm(request.POST, instance=slide)
+        if form.is_valid():
+            form.save()
+            return redirect('Catalogo_edit', delete_edit=delete_edit)
+    else:
+        form = SlideForm()
+
     if queryset:
         palabras = queryset.split()
         condiciones_busqueda = []
 
         for palabra in palabras:
             condicion = Q(name__icontains=palabra)
-            condicion2 = Q(description__icontains=palabra) 
+            condicion2 = Q(description__icontains=palabra)
             condiciones_busqueda.append(condicion)
             condiciones_busqueda.append(condicion2)
 
@@ -168,59 +157,58 @@ def catalogo_edit(request,delete_edit):
             consulta |= condicion
 
         catalogo = Slide.objects.filter(consulta)
-        
-    # paginator = Paginator(catalogo,30)
 
-    paginator = Paginator(catalogo,9)
-    
+    paginator = Paginator(catalogo, 9)
     page = request.GET.get('page')
     catalogo = paginator.get_page(page)
 
-    return render(request,"microscope/catalogo_edit.html",{'catalogo':catalogo,'delete_edit':delete_edit})
+    return render(request, "microscope/catalogo_edit.html", {
+        'catalogo': catalogo,
+        'delete_edit': delete_edit,
+        'form': form
+    })
 
-def deleteSlide(request, slide_id):
-    instancia = get_object_or_404(Slide, id=slide_id)
-    instancia.rawSlide.assembled = False
-    instancia.rawSlide.save()
-    base_media_path = os.path.join(settings.MEDIA_ROOT, 'slides')
-    folder_path = os.path.join(base_media_path, instancia.path)
-    if os.path.exists(folder_path) and os.path.isdir(folder_path):
-        shutil.rmtree(folder_path)
-
-    # Eliminar la instancia del catálogo
-    instancia.delete()
-
-    # Redirigir a la URL deseada
-    new_url = '/catalogo_edit/1/'
-    return redirect(new_url)
+def get_slide_data(request, slide_id):
+    slide = get_object_or_404(Slide, id=slide_id)
+    data = {
+        'id': slide.id,
+        'name': slide.name,
+        'description': slide.description,
+    }
+    return JsonResponse(data)
 
 def upload_file(request):
     listSlide = OpenSlide.objects.filter(assembled=False).distinct()
 
-    if request.method == 'POST': #Aqui se suben los archivos
+    if request.method == 'POST':
         option = int(request.POST.get('option'))
         form = SlideForm(request.POST, request.FILES)
         if form.is_valid():
-            option = int(request.POST.get('option'))
             rawSlide = OpenSlide.objects.get(id=int(request.POST.get('slide')))
             rawSlide.assembled = True
             rawSlide.save()
             instance = form.save(commit=False)
             instance.save()
             instance.rawSlide = rawSlide
-            instance.image = 'slides/slide' +str(instance.id)+'/1/0.jpg'
-            instance.path = 'slide' +str(instance.id)
+            instance.image = 'slides/slide' + str(instance.id) + '/1/0.jpg'
+            instance.path = 'slide' + str(instance.id)
             instance.save()
 
             # Llamar a la tarea asíncrona para convertir a mosaico
-            convert_to_tiles.delay(rawSlide.path, 'media/slides/slide' +str(instance.id), instance.rawSlide.id, instance.id,request.user.id)
+            task = convert_to_tiles.delay(rawSlide.path, 'media/slides/slide' + str(instance.id), instance.rawSlide.id, instance.id, request.user.id)
+            instance.task_id = task.id
+            instance.save()
+
+            return render(request, 'microscope/subir_archivo.html', {'form': form, 'listSlide': listSlide})
+
         else:
-            return JsonResponse(form.errors, status=400)  # Devuelve errores de validación
+            return JsonResponse(form.errors, status=400)
 
     else:
         form = SlideForm()
 
     return render(request, 'microscope/subir_archivo.html', {'form': form, 'listSlide': listSlide})
+
 
 def activity_log(request):
     listSlideError = ProcessingHistory.objects.filter(end_time__isnull=False).order_by('-end_time')
@@ -254,49 +242,21 @@ def historial_detalles(request, id):
         'error_message': history_entry.error_message,
     }
     return JsonResponse(data)
-# Conexión al servidor SFTP
-# def sftp_connect():
-#     host = 'localhost'
-#     port = 2222
-#     username = 'sftpuser'
-#     # Cambiar la ruta de la clave privada
-#     private_key_path = f'/etc/ssh/keys/{username}_private.pem'
 
-#     # Cargando la clave privada del usuario
-#     key = paramiko.RSAKey.from_private_key_file(private_key_path)
 
-#     transport = paramiko.Transport((host, port))
-#     transport.connect(username=username, pkey=key)
+def deleteSlide(request, slide_id):
+    instancia = get_object_or_404(Slide, id=slide_id)
+    instancia.rawSlide.assembled = False
+    instancia.rawSlide.save()
+    base_media_path = os.path.join(settings.MEDIA_ROOT, 'slides')
+    folder_path = os.path.join(base_media_path, instancia.path)
+    if os.path.exists(folder_path) and os.path.isdir(folder_path):
+        shutil.rmtree(folder_path)
 
-#     sftp = paramiko.SFTPClient.from_transport(transport)
-#     return sftp
+    # Eliminar la instancia del catálogo
+    instancia.delete()
 
-# # Subir archivo al servidor SFTP
-# def upload_file_to_sftp(local_path, remote_path):
-#     try:
-#         sftp = sftp_connect()
-#         sftp.put(local_path, remote_path)
-#         sftp.close()
-#         return True
-#     except Exception as e:
-#         print(f'Error al subir archivo al servidor SFTP: {e}')
-#         return False
- # Obtener el archivo del formulario
-            # uploaded_file = request.POST.get('file_name')
-            # # Directorio del usuario donde se encuentra el archivo
-            # user_directory = request.FILES.get('user_directory')
-            # # Construir la ruta completa del archivo del usuario
-            # user_file_path = os.path.join(user_directory, uploaded_file.name)
-            # # Construir la ruta donde se guardará en el servidor
-            # server_file_path = os.path.join('media/archivo', f'{instance.id}_{uploaded_file.name}')
+    # Redirigir a la URL deseada
+    new_url = '/catalogo_edit/1/'
+    return redirect(new_url)
 
-            # # Subir archivo al servidor SFTP
-            # if upload_file_to_sftp(user_file_path, server_file_path):
-            #     instance = OpenSlide(name=uploaded_file.name)
-            #     instance.save()
-            #     instance.path = server_file_path
-            #     instance.save()
-            #     response_data = {'message': 'Archivo cargado exitosamente'}
-            # else:
-            #     response_data = {'message': 'Error al subir archivo al servidor SFTP'}
-            # return JsonResponse(response_data)

@@ -4,6 +4,8 @@
 read -p "¿Modo producción? (s/n): " mode
 read -p "Ingresa tu dominio (deja vacío para configuración local): " domain
 read -p "Ingresa tu correo electrónico para el certificado SSL: " email
+read -s -p "Ingresa la contraseña del superusuario de Django: " password
+echo
 
 # Determinar el modo
 if [[ $mode == "s" || $mode == "S" ]]; then
@@ -15,6 +17,7 @@ fi
 # Establecer valores predeterminados
 DOMAIN=${domain:-localhost}
 EMAIL=${email:-admin@localhost}
+PASSWORD=$password
 
 # Configurar entorno virtual
 python3 -m venv virtual_microscope/venv
@@ -36,11 +39,12 @@ fi
 # Exportar la variable de modo para docker-compose
 export MODE=$MODE
 
-if [ ! -f /etc/ssl/certs/dhparam.pem ]; then
-    echo "### Generating dhparam.pem file ..."
-    sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
+if [[ $MODE == "prod" ]]; then
+    if [ ! -f /etc/ssl/certs/dhparam.pem ]; then
+        echo "### Generating dhparam.pem file ..."
+        sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
+    fi
 fi
-
 # Construir imágenes Docker
 sudo docker compose build --build-arg MODE=$MODE redis_vm db_vm gunicorn_vm daphne_vm celery_vm nginx_vm
 
@@ -49,8 +53,12 @@ sudo docker compose up --no-build -d --no-recreate redis_vm db_vm gunicorn_vm da
 sudo docker compose exec gunicorn_vm python manage.py makemigrations
 sudo docker compose exec gunicorn_vm python manage.py migrate
 
-# Crear superusuario
-sudo docker compose exec gunicorn_vm python manage.py shell -c "import sys; exec(sys.stdin.read())" < scripts/create_superuser.py
+# Exportar las variables de entorno para el superusuario
+export DJANGO_SUPERUSER_EMAIL=$EMAIL
+export DJANGO_SUPERUSER_PASSWORD=$PASSWORD
+
+# sudo docker compose exec gunicorn_vm python manage.py shell -c "import sys; exec(sys.stdin.read())" < scripts/create_superuser.py
+sudo docker exec -e DJANGO_SUPERUSER_EMAIL=$DJANGO_SUPERUSER_EMAIL -e DJANGO_SUPERUSER_PASSWORD=$DJANGO_SUPERUSER_PASSWORD $(sudo docker ps -q -f name=gunicorn_vm) python manage.py shell -c "exec(open('/app/scripts/create_superuser.py').read())"
 
 
 # Solicitar y configurar certificados SSL si es producción

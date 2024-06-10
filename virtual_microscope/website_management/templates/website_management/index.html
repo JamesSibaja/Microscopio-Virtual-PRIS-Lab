@@ -1,63 +1,189 @@
 
-<!--Se extiene la  plantilla genérica -->
 {% extends "generica.html" %}
+{% load static %}
+
 {% block content %}
-{%load static%} 
+<header>
+    <style>
+        .hero-index {
+            height: 400px;
+            background: url("{% static 'hero.jpg' %}") no-repeat center center;
+            background-size: cover;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+        }
+
+        .hero-text {
+            font-family: 'Arial', sans-serif;
+        }
+
+        .hero-text h1 {
+            font-size: 3em;
+            margin: 0.2em 0;
+        }
+
+        .hero-text p {
+            font-size: 1.5em;
+            margin: 0.2em 0;
+        }
+
+        .content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .section {
+            margin: 50px 0;
+        }
+
+        .section h2 {
+            font-size: 2em;
+            color: #333;
+        }
+
+        .section p {
+            font-size: 1.2em;
+            color: #555;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 20px 0;
+            font-size: 1.2em;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .cta-button:hover {
+            background-color: #0056b3;
+        }
+
+        .carousel {
+            display: flex;
+            overflow: hidden;
+            width: 100%;
+            height: 200px;
+            margin: 20px 0;
+        }
+
+        .carousel img {
+            width: 100%;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .carousel-container {
+            position: relative;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+        }
+
+        .carousel-btn.left {
+            left: 10px;
+        }
+
+        .carousel-btn.right {
+            right: 10px;
+        }
+        .hero-index {
+            height: 350px;
+          }
+        @media (max-width: 768px) {
+          .hero-index {
+            height: 250px;
+          }
+        }
+
+        @media (min-width: 768px) and (max-width: 1200px) {
+          .hero-index {
+            height: 300px;
+          }
+        }
+    </style>
 </header>
-<style>
-  .hero-index {
-    height: 350px;
-  }
-@media (max-width: 768px) {
-  .hero-index {
-    height: 250px;
-  }
-}
 
-@media (min-width: 768px) and (max-width: 1200px) {
-  .hero-index {
-    height: 300px;
-  }
-}
-</style>
-<div class="hero-index" style="position: relative; width: 100%;">
-  <img src="static/hero.jpg" alt="Hero de la pagina de inicio" style="width: 100%; height: 100%; object-fit: cover;">
-  <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;text-shadow: 0px 0px 3px rgb(0, 0, 0);;color: rgb(255, 255, 255);">
-    <p style="font-family: 'Arial', sans-serif; margin: 0; font-size: calc(2vw + 10px); ">¡Bienvenido a nuestro Microscopio Virtual!</p>
-    <p style="font-family: 'Arial', sans-serif; margin: 0; font-size: calc(1vw + 5px); ">Explora el mundo microscópico de manera interactiva</p>
-  </div>
+<div class="hero-index">
+    <div class="hero-text">
+        <h1>¡Bienvenido a nuestro Microscopio Virtual!</h1>
+        <p>Explora el mundo microscópico de manera interactiva</p>
+    </div>
 </div>
 
+<div class="container" style="background-color: #f5f5f5;">
+    <div class="content">
+        <div class="section">
+            <h2>Sobre el Proyecto</h2>
+            <p>La iniciativa <em>Microscopio Virtual</em> es un proyecto de la UCR que permite a los usuarios explorar el mundo microscópico a través de una plataforma interactiva. Nuestro objetivo es facilitar la investigación, educación y patología digital utilizando software libre.</p>
+        </div>
 
+        <div class="section">
+            <h2>Explora nuestra plataforma</h2>
+            <div class="carousel-container">
+                <button class="carousel-btn left" onclick="plusSlides(-1)">&#10094;</button>
+                <div class="carousel">
+                    <img src="{% static 'slide1.png' %}" alt="Slide 1">
+                    <img src="{% static 'slide2.png' %}" alt="Slide 2">
+                    <img src="{% static 'slide3.png' %}" alt="Slide 3">
+                </div>
+                <button class="carousel-btn right" onclick="plusSlides(1)">&#10095;</button>
+            </div>
+            <p>Utiliza el microscopio virtual para examinar nuestras muestras detalladas y aprende más sobre los organismos y estructuras microscópicas.</p>
+            <a href="{% url 'Catalogo' %}" class="cta-button">Explorar Ahora</a>
+        </div>
 
+        <div class="section">
+            <h2>Crea tus Propios Proyectos</h2>
+            <p>Contribuye a nuestra base de datos creando y subiendo tus propias muestras. Comparte tus hallazgos con la comunidad científica.</p>
+            <a href="{% url 'Login' %}" class="cta-button">Crear Proyecto</a>
+        </div>
+
+        <div class="section">
+            <h2>Interfaz de Administración</h2>
+            <p>Si eres administrador, puedes subir nuevas placas virtuales y gestionar el catálogo.</p>
+            <a href="{% url 'upload_file' %}" class="cta-button">Ir a Administración</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    let slideIndex = 0;
+    const slides = document.querySelectorAll('.carousel img');
     
-<div class="container" style="height: auto;background-color:rgb(245, 245, 245);" style="width:100%;" >
-  <div class="separar"></div>  
-<div style="position: relative;"  class= content>
-  <br>
-  <br>
+    function showSlides() {
+        slides.forEach((slide, index) => {
+            slide.style.transform = `translateX(${-slideIndex * 100}%)`;
+        });
+    }
 
-<br>
-    <p style="text-align: center;"> La iniciativa <em>Microscopio Virtual</em> es un proyecto de la UCR, donde se le permite a los usuarios explorar el 
-    microscopio por medio de una placa virtual. Este proyecto cuenta con una ampliar base de datos de muestras 
-    virtuales. </p>
-    <br>
-<h2 style="text-align: center;">Explora nuestras placas por medio del microscopio virtual</h2>
-<!-- <p><img style ='width:100%;text-align: center;' src="static/demo1.png"></p> -->
+    function plusSlides(n) {
+        slideIndex = (slideIndex + n + slides.length) % slides.length;
+        showSlides();
+    }
 
-<br>
-<!-- <div class="video-container"  >
-  <video class="loop" autoplay muted loop>
-    <source src="static/demo.mp4" type="video/webm">
-    Your browser does not support the video tag.
-  </video>
-</div> -->
-<br>
-<h2 style="text-align: center;">Crea tus propios proyecto </h2>
-<br>
-<!-- <p><img style ='width:100%;text-align: center;' src="media/demo2.png"></p> -->
+    document.addEventListener('DOMContentLoaded', () => {
+        showSlides();
+    });
+</script>
 
-</div>
-<div style="height: 50px;width: 100%;"></div>
-</div>
 {% endblock %}
+

@@ -105,6 +105,62 @@
   border-radius: 5px;
   cursor: pointer;
 }
+.processing-item {
+    width: 90%;
+    display: flex;
+    align-items: center;
+    height: 30px;
+    margin: 10px 0;
+}
+
+.file-name-container {
+    width: 40%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-name {
+    margin: 0;
+}
+
+.progress-container {
+    width: 50%;
+    background-color: #f3f3f3;
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #4caf50;
+    text-align: center;
+    line-height: 30px;
+    color: white;
+    width: 0;
+}
+
+.spinner {
+    width: 30px;
+    height: 30px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-left: 10px;
+}
+
+.completed-icon {
+    font-size: 30px;
+    color: #4caf50;
+    margin-left: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 @media (max-width: 768px) {
     .subir {
         border: 0px solid #ffffff;
@@ -156,12 +212,19 @@
         <!-- <div style="height: 49%;overflow-y: scroll;"> -->
         <div style="margin: 0% 0% 3% 0%; padding-top: 60px; padding-right: 0px;height: calc(100% - 85px);overflow-y: scroll;">
             <hr style="margin: 0;">
-            {%for slide in listSlide%}
-            <div style="width: 74%;display: inline-block;height: 30px;">
-                <h4 style="display: inline-block;">{{slide.name}}</h4>
+            {% for slide in listSlide %}
+            <div class="processing-item">
+                <div class="file-name-container">
+                    <h4 class="file-name">{{ slide.name }}</h4>
+                </div>
+                <div class="progress-container">
+                    <div id="progress-bar-{{ slide.id }}" class="progress-bar"></div>
+                </div>
+                <div id="spinner-{{ slide.id }}" class="spinner"></div>
+                <i id="completed-icon-{{ slide.id }}" class="material-icons completed-icon" style="display: none;">check_circle</i>
             </div>
-                <hr style="margin: 0;">
-            {%endfor%}
+            <hr style="margin: 0;">
+        {% endfor %}
         </div>
     </div>
     <!-- <div style="height: 35%;margin-bottom: 4%;overflow-y: scroll;border: 1px solid rgb(54, 54, 54);padding: 10px;">
@@ -187,49 +250,39 @@
         {% endif %}
         
         </div>
-        <div id="miModal" class="modal">
-            <div class="modal-contenido">
-            <span class="cerrar cerrarModal" >&times;</span>
-                <h2>Nueva Lámina Virtual</h2>
-            <form method="POST" > 
-                {% csrf_token %}
-                {{ form.as_p }}
-                <input  type="hidden" name="option" value='0'>
-                    <input id="slide" type="hidden" name="slide" value='0'>
-                    <!-- <div style="position: relative; left: 2%;" class="botones">
-                        <button type="submit" class="boton-enviar btn-primary">crear</button>
-                    
-                        <button type="button" class="boton-cerrar btn-danger cerrarModal" >Cancelar</button>
-                    </div> -->
-            </form>
-            </div>
-        </div>
-        <script>
-            // var abrirModal = document.getElementById('abrirModal');
-            var modal = document.getElementById('miModal');
-            var slide = document.getElementById('slide');
-            var abrirModal = document.querySelectorAll('.abrirModal');
-            var cerrarModal = document.querySelectorAll('.cerrarModal');
 
-            // Agrega un controlador de eventos para cada botón de edición
-            abrirModal.forEach(function(boton) {
-                boton.addEventListener('click', function() {
-                    // Obtiene el valor del atributo data-id del botón
-                    var id = boton.getAttribute('id');
 
-                    slide.value = id;
-                    modal.style.display = 'block';
-                    // option.value = '0';
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        {% for slide in listSlide %}
+            let taskId = '{{ slide.task_id }}';  // Asegúrate de que cada slide tenga su task_id asociado
+
+            function updateProgress(taskId, slideId) {
+                $.ajax({
+                    url: `/task_status/${taskId}/`,
+                    success: function(response) {
+                        let percentComplete = (response.current / response.total) * 100;
+                        $(`#progress-bar-${slideId}`).css('width', percentComplete + '%').text(Math.round(percentComplete) + '%');
+                        
+                        if (response.current < response.total) {
+                            setTimeout(function() {
+                                updateProgress(taskId, slideId);
+                            }, 5000);  // Actualizar cada 5 segundos
+                        } else {
+                            $(`#spinner-${slideId}`).hide();
+                            $(`#completed-icon-${slideId}`).show();
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Error al consultar el estado del task');
+                    }
                 });
-            });
-            cerrarModal.forEach(function(boton) {
-                boton.addEventListener('click', function() {
-                    modal.style.display = 'none';
-                    // option.value = '1';
-                });
-            });
-            
-            
-        </script>
+            }
+
+            updateProgress(taskId, '{{ slide.id }}');
+        {% endfor %}
+    });
+</script>
     
 {% endblock %}

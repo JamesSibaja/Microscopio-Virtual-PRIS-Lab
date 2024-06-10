@@ -57,6 +57,7 @@ class Slide(models.Model):
     description = models.CharField(max_length=500)
     assembled = models.BooleanField(default=False)
     rawSlide = models.ForeignKey(OpenSlide, on_delete=models.CASCADE, null=True)
+    task_id = models.CharField(max_length=255, null=True, blank=True)
     zoomI = models.IntegerField(null=True)
     zoomM = models.IntegerField(null=True)
     zoomMin = models.IntegerField(null=True)

@@ -53,7 +53,7 @@ def convert_to_tiles(self, input_path, output_path, idOpenSLide, idSlide, user_s
         thumbnail = slide.get_thumbnail((256, 256))
         tile_filename = os.path.join(row_folderII, f"{0}.jpg")
         thumbnail.save(tile_filename, "JPEG")
-
+        processed_tiles = 0
         for level in range(num_levels):
             level_width, level_height = slide.level_dimensions[level]
             level_downsample = slide.level_downsamples[level]
@@ -80,6 +80,9 @@ def convert_to_tiles(self, input_path, output_path, idOpenSLide, idSlide, user_s
                         
                         tile_filename = os.path.join(row_folder, f"{col + xy_level_folder}.jpg")
                         tile.save(tile_filename, "JPEG")
+                        processed_tiles += 1
+                        self.update_state(state='PROGRESS', meta={'current': processed_tiles, 'total': total_tiles})
+
 
         rawSlide = OpenSlide.objects.get(id=idOpenSLide)
         microscopeSlide.assembled = True
@@ -100,7 +103,7 @@ def convert_to_tiles(self, input_path, output_path, idOpenSLide, idSlide, user_s
         history_entry.end_time = timezone.now()
         history_entry.save()
 
-        return base_level
+        return {'current': total_tiles, 'total': total_tiles, 'status': 'Task completed!'}
 
     except Exception as e:
         try:

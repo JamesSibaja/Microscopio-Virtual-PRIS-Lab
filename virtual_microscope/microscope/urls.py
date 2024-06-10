@@ -32,5 +32,7 @@ urlpatterns = [
     path('deleteSlide/<int:slide_id>', admin_required(deleteSlide)),
     path('delete/<int:slide_id>', admin_required(delete)),
     path('upload/', upload_view, name='upload'),
+     path('task_status/<str:task_id>/', views.task_status, name='task_status'),
     path('historial/detalles/<int:id>/', historial_detalles, name='historial_detalles'),
+    path('get/slide/data/<int:slide_id>/', views.get_slide_data, name='get_slide_data'),
 ]
