@@ -35,13 +35,29 @@ fi
 
 # Limpia cualquier certificado existente
 echo "### Cleaning up any existing certificates for $domains ..."
+
+if docker compose run --rm --entrypoint "test -d /etc/letsencrypt/live/$domains" certbot; then
+  docker compose run --rm --entrypoint "\
+      chmod -R 777 /etc/letsencrypt/live/$domains" certbot
+  echo
+fi
+
+if docker compose run --rm --entrypoint "test -d //etc/letsencrypt/archive/$domains" certbot; then
+  docker compose run --rm --entrypoint "\
+      chmod -R 777 /etc/letsencrypt/archive/$domains" certbot
+  echo
+fi
+if docker compose run --rm --entrypoint "test -d /etc/letsencrypt/renewal/$domains.conf" certbot; then
+  docker compose run --rm --entrypoint "\
+      chmod 777 /etc/letsencrypt/renewal/$domains.conf" certbot
+  echo
+fi
+
+
 docker compose run --rm --entrypoint "\
   rm -Rf /etc/letsencrypt/live/$domains && \
-  rm -Rf /etc/letsencrypt/live/${domains}-0001 && \
   rm -Rf /etc/letsencrypt/archive/$domains && \
-  rm -Rf /etc/letsencrypt/archive/${domains}-0001 && \
-  rm -Rf /etc/letsencrypt/renewal/$domains.conf && \
-  rm -Rf /etc/letsencrypt/renewal/${domains}-0001.conf" certbot
+  rm -Rf /etc/letsencrypt/renewal/$domains.conf" certbot
 echo
 
 # Asegúrate de que los directorios se han eliminado completamente
@@ -56,87 +72,9 @@ cleanup_status=$(docker compose run --rm --entrypoint "\
 echo "$cleanup_status"
 
 if [[ "$cleanup_status" == *"still exists"* ]]; then
-  echo "### Adjusting permissions and forcing cleanup of remaining files..."
-
-  # Verifica si el directorio /etc/letsencrypt/live/demo-js.com existe antes de intentar ajustar los permisos y eliminar los archivos restantes
-   if docker compose run --rm --entrypoint "test -d /etc/letsencrypt/live/$domains" certbot; then
-    # Ajusta los permisos de los directorios y archivos restantes
-    docker compose run --rm --entrypoint "\
-      chmod -R 777 /etc/letsencrypt/live/$domains" certbot
-
-    # Elimina los directorios y archivos restantes
-    docker compose run --rm --entrypoint "\
-      rm -rf /etc/letsencrypt/live/$domains" certbot
-    echo
-
-    echo "### Re-verifying cleanup..."
-    cleanup_status=$(docker compose run --rm --entrypoint "\
-      sh -c 'if [ -d /etc/letsencrypt/live/$domains ]; then echo \"/etc/letsencrypt/live/$domains still exists\"; fi; \
-              if [ ! -d /etc/letsencrypt/live/$domains ]; then echo \"Cleanup verified.\"; exit 0; else exit 1; fi'" certbot)
-
-    echo "$cleanup_status"
-
-    if [[ "$cleanup_status" == *"still exists"* ]]; then
-      echo "Cleanup verification failed again. Exiting."
-      exit 1
-    fi
-  else
-    echo "Directory /etc/letsencrypt/live/$domains does not exist."
-  fi
-
-if docker compose run --rm --entrypoint "test -d /etc/letsencrypt/archive/$domains" certbot; then
-    # Ajusta los permisos de los directorios y archivos restantes
-    docker compose run --rm --entrypoint "\
-      chmod -R 777 /etc/letsencrypt/archive/$domains" certbot
-
-    # Elimina los directorios y archivos restantes
-    docker compose run --rm --entrypoint "\
-      rm -rf /etc/letsencrypt/archive/$domains" certbot
-    echo
-
-    echo "### Re-verifying cleanup..."
-    cleanup_status=$(docker compose run --rm --entrypoint "\
-      sh -c 'if [ -d /etc/letsencrypt/archive/$domains ]; then echo \"/etc/letsencrypt/archive/$domains still exists\"; fi; \
-              [ ! -d /etc/letsencrypt/archive/$domains ]; then echo \"Cleanup verified.\"; exit 0; else exit 1; fi'" certbot)
-
-    echo "$cleanup_status"
-
-    if [[ "$cleanup_status" == *"still exists"* ]]; then
-      echo "Cleanup verification failed again. Exiting."
-      exit 1
-    fi
-  else
-    echo "Directory /etc/letsencrypt/archive/$domains does not exist. "
-  fi
-
-if docker compose run --rm --entrypoint "test -d /etc/letsencrypt/renewal/$domains.conf" certbot; then
-    # Ajusta los permisos de los directorios y archivos restantes
-    docker compose run --rm --entrypoint "\
-      chmod 777 /etc/letsencrypt/renewal/$domains.conf" certbot
-
-    # Elimina los directorios y archivos restantes
-    docker compose run --rm --entrypoint "\
-      rm -f /etc/letsencrypt/renewal/$domains.conf" certbot
-    echo
-
-    echo "### Re-verifying cleanup..."
-    cleanup_status=$(docker compose run --rm --entrypoint "\
-      sh -c '
-              if [ -f /etc/letsencrypt/renewal/$domains.conf ]; then echo \"/etc/letsencrypt/renewal/$domains.conf still exists\"; fi; \
-              [ ! -f /etc/letsencrypt/renewal/$domains.conf ]; then echo \"Cleanup verified.\"; exit 0; else exit 1; fi'" certbot)
-
-    echo "$cleanup_status"
-
-    if [[ "$cleanup_status" == *"still exists"* ]]; then
-      echo "Cleanup verification failed again. Exiting."
-      exit 1
-    fi
-  else
-    echo "Directory /etc/letsencrypt/renewal/$domains.conf does not exist. "
-  fi
-
+  echo "Cleanup verification failed again. Exiting."
+  exit 1
 fi
-
 
 echo
 
@@ -160,13 +98,28 @@ echo
 
 # Elimina el certificado dummy
 echo "### Deleting dummy certificate for $domains ..."
+
+if docker compose run --rm --entrypoint "test -d /etc/letsencrypt/live/$domains" certbot; then
+  docker compose run --rm --entrypoint "\
+      chmod -R 777 /etc/letsencrypt/live/$domains" certbot
+  echo
+fi
+
+if docker compose run --rm --entrypoint "test -d //etc/letsencrypt/archive/$domains" certbot; then
+  docker compose run --rm --entrypoint "\
+      chmod -R 777 /etc/letsencrypt/archive/$domains" certbot
+  echo
+fi
+if docker compose run --rm --entrypoint "test -d /etc/letsencrypt/renewal/$domains.conf" certbot; then
+  docker compose run --rm --entrypoint "\
+      chmod 777 /etc/letsencrypt/renewal/$domains.conf" certbot
+  echo
+fi
+
 docker compose run --rm --entrypoint "\
   rm -Rf /etc/letsencrypt/live/$domains && \
-  rm -Rf /etc/letsencrypt/live/${domains}-0001 && \
   rm -Rf /etc/letsencrypt/archive/$domains && \
-  rm -Rf /etc/letsencrypt/archive/${domains}-0001 && \
-  rm -Rf /etc/letsencrypt/renewal/$domains.conf && \
-  rm -Rf /etc/letsencrypt/renewal/${domains}-0001.conf" certbot
+  rm -Rf /etc/letsencrypt/renewal/$domains.conf" certbot
 echo
 
 # Solicita un certificado de Let's Encrypt
