@@ -36,19 +36,38 @@ fi
 # Limpia cualquier certificado existente
 echo "### Cleaning up any existing certificates for $domains ..."
 
+if docker compose run --rm --entrypoint "test -d /etc/letsencrypt/live/$domains" certbot; then
+  docker compose run --rm --entrypoint "\
+      chmod -R 777 /etc/letsencrypt/live/$domains" certbot
+  echo
+fi
+
+if docker compose run --rm --entrypoint "test -d //etc/letsencrypt/archive/$domains" certbot; then
+  docker compose run --rm --entrypoint "\
+      chmod -R 777 /etc/letsencrypt/archive/$domains" certbot
+  echo
+fi
+if docker compose run --rm --entrypoint "test -d /etc/letsencrypt/renewal/$domains.conf" certbot; then
+  docker compose run --rm --entrypoint "\
+      chmod 777 /etc/letsencrypt/renewal/$domains.conf" certbot
+  echo
+fi
+
+
 docker compose run --rm --entrypoint "\
-  rm -Rf /etc/letsencrypt/live/${domains}* && \
-  rm -Rf /etc/letsencrypt/archive/${domains}* && \
+  rm -Rf /etc/letsencrypt/live/$domains && \
+  rm -Rf /etc/letsencrypt/archive/$domains && \
   rm -Rf /etc/letsencrypt/renewal/$domains.conf" certbot
 echo
 
 # Asegúrate de que los directorios se han eliminado completamente
+# Asegúrate de que los directorios se han eliminado completamente
 echo "### Verifying cleanup ..."
 cleanup_status=$(docker compose run --rm --entrypoint "\
-  sh -c 'if [ -d /etc/letsencrypt/live/${domains}* ]; then echo \"/etc/letsencrypt/live/${domains}* still exists\"; fi; \
-          if [ -d /etc/letsencrypt/archive/${domains}* ]; then echo \"/etc/letsencrypt/archive/${domains}* still exists\"; fi; \
+  sh -c 'if [ -d /etc/letsencrypt/live/$domains ]; then echo \"/etc/letsencrypt/live/$domains still exists\"; fi; \
+          if [ -d /etc/letsencrypt/archive/$domains ]; then echo \"/etc/letsencrypt/archive/$domains still exists\"; fi; \
           if [ -f /etc/letsencrypt/renewal/$domains.conf ]; then echo \"/etc/letsencrypt/renewal/$domains.conf still exists\"; fi; \
-          if [ ! -d /etc/letsencrypt/live/${domains}* ] && [ ! -d /etc/letsencrypt/archive/${domains}* ] && [ ! -f /etc/letsencrypt/renewal/$domains.conf ]; then echo \"Cleanup verified.\"; exit 0; else exit 1; fi'" certbot)
+          if [ ! -d /etc/letsencrypt/live/$domains ] && [ ! -d /etc/letsencrypt/archive/$domains ] && [ ! -f /etc/letsencrypt/renewal/$domains.conf ]; then echo \"Cleanup verified.\"; exit 0; else exit 1; fi'" certbot)
 
 echo "$cleanup_status"
 
@@ -79,6 +98,24 @@ echo
 
 # Elimina el certificado dummy
 echo "### Deleting dummy certificate for $domains ..."
+
+if docker compose run --rm --entrypoint "test -d /etc/letsencrypt/live/$domains" certbot; then
+  docker compose run --rm --entrypoint "\
+      chmod -R 777 /etc/letsencrypt/live/$domains" certbot
+  echo
+fi
+
+if docker compose run --rm --entrypoint "test -d //etc/letsencrypt/archive/$domains" certbot; then
+  docker compose run --rm --entrypoint "\
+      chmod -R 777 /etc/letsencrypt/archive/$domains" certbot
+  echo
+fi
+if docker compose run --rm --entrypoint "test -d /etc/letsencrypt/renewal/$domains.conf" certbot; then
+  docker compose run --rm --entrypoint "\
+      chmod 777 /etc/letsencrypt/renewal/$domains.conf" certbot
+  echo
+fi
+
 docker compose run --rm --entrypoint "\
   rm -Rf /etc/letsencrypt/live/$domains && \
   rm -Rf /etc/letsencrypt/archive/$domains && \
