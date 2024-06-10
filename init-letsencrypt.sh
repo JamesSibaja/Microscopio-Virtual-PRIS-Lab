@@ -1,12 +1,30 @@
 #!/bin/bash
 
+# Define los parámetros de entrada
 domains=($1)
 rsa_key_size=4096
 data_path="./letsencrypt"
 email=$2
 staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
-# Download recommended TLS parameters if they don't exist
+# Verifica que el script se esté ejecutando con privilegios de superusuario
+if [[ "$EUID" -ne 0 ]]; then
+  echo "Por favor, ejecuta el script con sudo."
+  exit 1
+fi
+
+# Verifica si la carpeta existe y tiene permisos de escritura
+if [ ! -d "$data_path" ]; then
+  echo "La carpeta $data_path no existe. Creándola..."
+  mkdir -p "$data_path"
+fi
+
+if [ ! -w "$data_path" ]; then
+  echo "No tienes permisos de escritura en la carpeta $data_path. Por favor, ajusta los permisos."
+  exit 1
+fi
+
+# Descarga los parámetros TLS recomendados si no existen
 if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ] || [ ! -e "$data_path/conf/ssl-dhparams.pem" ]; then
   echo "### Downloading recommended TLS parameters ..."
   mkdir -p "$data_path/conf"
@@ -15,7 +33,7 @@ if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ] || [ ! -e "$data_path/conf/
   echo
 fi
 
-# Clean up any existing certificates
+# Limpia cualquier certificado existente
 echo "### Cleaning up any existing certificates for $domains ..."
 docker compose run --rm --entrypoint "\
   rm -Rf /etc/letsencrypt/live/$domains && \
@@ -26,19 +44,25 @@ docker compose run --rm --entrypoint "\
   rm -Rf /etc/letsencrypt/renewal/${domains}-0001.conf" certbot
 echo
 
-# Ensure directories are completely removed
+# Asegúrate de que los directorios se han eliminado completamente
 echo "### Verifying cleanup ..."
-docker compose run --rm --entrypoint "sh -c '\
-  if [ -d /etc/letsencrypt/live/$domains ] || [ -d /etc/letsencrypt/archive/$domains ] || [ -f /etc/letsencrypt/renewal/$domains.conf ]; then \
+cleanup_status=$(docker compose run --rm --entrypoint "\
+  sh -c 'if [ -d /etc/letsencrypt/live/$domains ] || [ -d /etc/letsencrypt/archive/$domains ] || [ -f /etc/letsencrypt/renewal/$domains.conf ]; then \
     echo \"Previous certificates not fully removed. Aborting.\"; exit 1; \
-  fi'" certbot
-if [ $? -ne 0 ]; then
+  else \
+    echo \"Cleanup verified.\"; exit 0; \
+  fi'" certbot)
+
+echo "$cleanup_status"
+
+if [[ "$cleanup_status" == *"Previous certificates not fully removed. Aborting."* ]]; then
   echo "Cleanup verification failed. Exiting."
   exit 1
 fi
+
 echo
 
-# Create a dummy certificate if needed
+# Crea un certificado dummy si es necesario
 if [ ! -e "$data_path/conf/live/$domains/privkey.pem" ]; then
   echo "### Creating dummy certificate for $domains ..."
   path="$data_path/conf/live/$domains"
@@ -51,12 +75,12 @@ if [ ! -e "$data_path/conf/live/$domains/privkey.pem" ]; then
   echo
 fi
 
-# Start nginx
+# Inicia nginx
 echo "### Starting nginx ..."
 docker compose up --force-recreate -d nginx_vm
 echo
 
-# Delete the dummy certificate
+# Elimina el certificado dummy
 echo "### Deleting dummy certificate for $domains ..."
 docker compose run --rm --entrypoint "\
   rm -Rf /etc/letsencrypt/live/$domains && \
@@ -67,7 +91,7 @@ docker compose run --rm --entrypoint "\
   rm -Rf /etc/letsencrypt/renewal/${domains}-0001.conf" certbot
 echo
 
-# Request Let's Encrypt certificate
+# Solicita un certificado de Let's Encrypt
 echo "### Requesting Let's Encrypt certificate for $domains ..."
 domain_args=""
 for domain in "${domains[@]}"; do
@@ -91,6 +115,6 @@ docker compose run --rm --entrypoint "\
     -v" certbot
 echo
 
-# Reload nginx
+# Recarga nginx
 echo "### Reloading nginx ..."
 docker compose exec nginx_vm nginx -s reload
