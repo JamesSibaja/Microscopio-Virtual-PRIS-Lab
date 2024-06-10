@@ -81,8 +81,7 @@ if [[ "$cleanup_status" == *"still exists"* ]]; then
       exit 1
     fi
   else
-    echo "Directory /etc/letsencrypt/live/$domains does not exist. Exiting."
-    exit 1
+    echo "Directory /etc/letsencrypt/live/$domains does not exist."
   fi
 
 if docker compose run --rm --entrypoint "test -d /etc/letsencrypt/archive/$domains" certbot; then
@@ -107,8 +106,7 @@ if docker compose run --rm --entrypoint "test -d /etc/letsencrypt/archive/$domai
       exit 1
     fi
   else
-    echo "Directory /etc/letsencrypt/archive/$domains does not exist. Exiting."
-    exit 1
+    echo "Directory /etc/letsencrypt/archive/$domains does not exist. "
   fi
 
 if docker compose run --rm --entrypoint "test -d /etc/letsencrypt/renewal/$domains.conf" certbot; then
@@ -134,8 +132,7 @@ if docker compose run --rm --entrypoint "test -d /etc/letsencrypt/renewal/$domai
       exit 1
     fi
   else
-    echo "Directory /etc/letsencrypt/renewal/$domains.conf does not exist. Exiting."
-    exit 1
+    echo "Directory /etc/letsencrypt/renewal/$domains.conf does not exist. "
   fi
 
 fi
