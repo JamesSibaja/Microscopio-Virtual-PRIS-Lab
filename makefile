@@ -30,8 +30,11 @@ migration:
 	docker compose down
 
 clean:
+	sudo docker system prune -a
 	docker compose down
 	rm -rf docs/
+	sudo docker system prune -a
+	git pull
 
 fix-docker-permissions:
 	@sudo usermod -aG docker $$(whoami)
