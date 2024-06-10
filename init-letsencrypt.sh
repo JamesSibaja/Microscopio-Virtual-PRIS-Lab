@@ -45,6 +45,7 @@ docker compose run --rm --entrypoint "\
 echo
 
 # Asegúrate de que los directorios se han eliminado completamente
+# Asegúrate de que los directorios se han eliminado completamente
 echo "### Verifying cleanup ..."
 cleanup_status=$(docker compose run --rm --entrypoint "\
   sh -c 'if [ -d /etc/letsencrypt/live/$domains ]; then echo \"/etc/letsencrypt/live/$domains still exists\"; fi; \
@@ -57,33 +58,88 @@ echo "$cleanup_status"
 if [[ "$cleanup_status" == *"still exists"* ]]; then
   echo "### Adjusting permissions and forcing cleanup of remaining files..."
 
-  # Ajusta los permisos de los directorios y archivos restantes
-  docker compose run --rm --entrypoint "\
-    chmod -R 777 /etc/letsencrypt/live/$domains && \
-    chmod -R 777 /etc/letsencrypt/archive/$domains && \
-    chmod 777 /etc/letsencrypt/renewal/$domains.conf" certbot
+  # Verifica si el directorio /etc/letsencrypt/live/demo-js.com existe antes de intentar ajustar los permisos y eliminar los archivos restantes
+   if docker compose run --rm --entrypoint "test -d /etc/letsencrypt/live/$domains" certbot; then
+    # Ajusta los permisos de los directorios y archivos restantes
+    docker compose run --rm --entrypoint "\
+      chmod -R 777 /etc/letsencrypt/live/$domains" certbot
 
-  # Elimina los directorios y archivos restantes
-  docker compose run --rm --entrypoint "\
-    rm -rf /etc/letsencrypt/live/$domains && \
-    rm -rf /etc/letsencrypt/archive/$domains && \
-    rm -f /etc/letsencrypt/renewal/$domains.conf" certbot
-  echo
+    # Elimina los directorios y archivos restantes
+    docker compose run --rm --entrypoint "\
+      rm -rf /etc/letsencrypt/live/$domains" certbot
+    echo
 
-  echo "### Re-verifying cleanup..."
-  cleanup_status=$(docker compose run --rm --entrypoint "\
-    sh -c 'if [ -d /etc/letsencrypt/live/$domains ]; then echo \"/etc/letsencrypt/live/$domains still exists\"; fi; \
-            if [ -d /etc/letsencrypt/archive/$domains ]; then echo \"/etc/letsencrypt/archive/$domains still exists\"; fi; \
-            if [ -f /etc/letsencrypt/renewal/$domains.conf ]; then echo \"/etc/letsencrypt/renewal/$domains.conf still exists\"; fi; \
-            if [ ! -d /etc/letsencrypt/live/$domains ] && [ ! -d /etc/letsencrypt/archive/$domains ] && [ ! -f /etc/letsencrypt/renewal/$domains.conf ]; then echo \"Cleanup verified.\"; exit 0; else exit 1; fi'" certbot)
+    echo "### Re-verifying cleanup..."
+    cleanup_status=$(docker compose run --rm --entrypoint "\
+      sh -c 'if [ -d /etc/letsencrypt/live/$domains ]; then echo \"/etc/letsencrypt/live/$domains still exists\"; fi; \
+              if [ ! -d /etc/letsencrypt/live/$domains ]; then echo \"Cleanup verified.\"; exit 0; else exit 1; fi'" certbot)
 
-  echo "$cleanup_status"
+    echo "$cleanup_status"
 
-  if [[ "$cleanup_status" == *"still exists"* ]]; then
-    echo "Cleanup verification failed again. Exiting."
+    if [[ "$cleanup_status" == *"still exists"* ]]; then
+      echo "Cleanup verification failed again. Exiting."
+      exit 1
+    fi
+  else
+    echo "Directory /etc/letsencrypt/live/$domains does not exist. Exiting."
     exit 1
   fi
+
+if docker compose run --rm --entrypoint "test -d /etc/letsencrypt/archive/$domains" certbot; then
+    # Ajusta los permisos de los directorios y archivos restantes
+    docker compose run --rm --entrypoint "\
+      chmod -R 777 /etc/letsencrypt/archive/$domains" certbot
+
+    # Elimina los directorios y archivos restantes
+    docker compose run --rm --entrypoint "\
+      rm -rf /etc/letsencrypt/archive/$domains" certbot
+    echo
+
+    echo "### Re-verifying cleanup..."
+    cleanup_status=$(docker compose run --rm --entrypoint "\
+      sh -c 'if [ -d /etc/letsencrypt/archive/$domains ]; then echo \"/etc/letsencrypt/archive/$domains still exists\"; fi; \
+              [ ! -d /etc/letsencrypt/archive/$domains ]; then echo \"Cleanup verified.\"; exit 0; else exit 1; fi'" certbot)
+
+    echo "$cleanup_status"
+
+    if [[ "$cleanup_status" == *"still exists"* ]]; then
+      echo "Cleanup verification failed again. Exiting."
+      exit 1
+    fi
+  else
+    echo "Directory /etc/letsencrypt/archive/$domains does not exist. Exiting."
+    exit 1
+  fi
+
+if docker compose run --rm --entrypoint "test -d /etc/letsencrypt/renewal/$domains.conf" certbot; then
+    # Ajusta los permisos de los directorios y archivos restantes
+    docker compose run --rm --entrypoint "\
+      chmod 777 /etc/letsencrypt/renewal/$domains.conf" certbot
+
+    # Elimina los directorios y archivos restantes
+    docker compose run --rm --entrypoint "\
+      rm -f /etc/letsencrypt/renewal/$domains.conf" certbot
+    echo
+
+    echo "### Re-verifying cleanup..."
+    cleanup_status=$(docker compose run --rm --entrypoint "\
+      sh -c '
+              if [ -f /etc/letsencrypt/renewal/$domains.conf ]; then echo \"/etc/letsencrypt/renewal/$domains.conf still exists\"; fi; \
+              [ ! -f /etc/letsencrypt/renewal/$domains.conf ]; then echo \"Cleanup verified.\"; exit 0; else exit 1; fi'" certbot)
+
+    echo "$cleanup_status"
+
+    if [[ "$cleanup_status" == *"still exists"* ]]; then
+      echo "Cleanup verification failed again. Exiting."
+      exit 1
+    fi
+  else
+    echo "Directory /etc/letsencrypt/renewal/$domains.conf does not exist. Exiting."
+    exit 1
+  fi
+
 fi
+
 
 echo
 
