@@ -47,15 +47,14 @@ echo
 # Asegúrate de que los directorios se han eliminado completamente
 echo "### Verifying cleanup ..."
 cleanup_status=$(docker compose run --rm --entrypoint "\
-  sh -c 'if [ -d /etc/letsencrypt/live/$domains ] || [ -d /etc/letsencrypt/archive/$domains ] || [ -f /etc/letsencrypt/renewal/$domains.conf ]; then \
-    echo \"Previous certificates not fully removed. Aborting.\"; exit 1; \
-  else \
-    echo \"Cleanup verified.\"; exit 0; \
-  fi'" certbot)
+  sh -c 'if [ -d /etc/letsencrypt/live/$domains ]; then echo \"/etc/letsencrypt/live/$domains still exists\"; fi; \
+          if [ -d /etc/letsencrypt/archive/$domains ]; then echo \"/etc/letsencrypt/archive/$domains still exists\"; fi; \
+          if [ -f /etc/letsencrypt/renewal/$domains.conf ]; then echo \"/etc/letsencrypt/renewal/$domains.conf still exists\"; fi; \
+          if [ ! -d /etc/letsencrypt/live/$domains ] && [ ! -d /etc/letsencrypt/archive/$domains ] && [ ! -f /etc/letsencrypt/renewal/$domains.conf ]; then echo \"Cleanup verified.\"; exit 0; else exit 1; fi'" certbot)
 
 echo "$cleanup_status"
 
-if [[ "$cleanup_status" == *"Previous certificates not fully removed. Aborting."* ]]; then
+if [[ "$cleanup_status" == *"still exists"* ]]; then
   echo "Cleanup verification failed. Exiting."
   exit 1
 fi
