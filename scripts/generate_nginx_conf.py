@@ -87,8 +87,8 @@ def generate_nginx_conf(mode, domain):
             listen 443 ssl;
             server_name {domain};
 
-            ssl_certificate /etc/letsencrypt/live/{domain}-0001/fullchain.pem;
-            ssl_certificate_key /etc/letsencrypt/live/{domain}-0001/privkey.pem;
+            ssl_certificate /etc/letsencrypt/live/{domain}/fullchain.pem;
+            ssl_certificate_key /etc/letsencrypt/live/{domain}/privkey.pem;
 
             ssl_protocols TLSv1.2 TLSv1.3;
             ssl_prefer_server_ciphers on;
@@ -127,7 +127,7 @@ def generate_nginx_conf(mode, domain):
         }}
         """
 
-    with open('nginx.conf', 'w') as f:
+    with open('/etc/nginx/nginx.conf', 'w') as f:
         f.write(conf)
 
 if __name__ == '__main__':
