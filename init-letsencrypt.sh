@@ -55,8 +55,34 @@ cleanup_status=$(docker compose run --rm --entrypoint "\
 echo "$cleanup_status"
 
 if [[ "$cleanup_status" == *"still exists"* ]]; then
-  echo "Cleanup verification failed. Exiting."
-  exit 1
+  echo "### Adjusting permissions and forcing cleanup of remaining files..."
+
+  # Ajusta los permisos de los directorios y archivos restantes
+  docker compose run --rm --entrypoint "\
+    chmod -R 777 /etc/letsencrypt/live/$domains && \
+    chmod -R 777 /etc/letsencrypt/archive/$domains && \
+    chmod 777 /etc/letsencrypt/renewal/$domains.conf" certbot
+
+  # Elimina los directorios y archivos restantes
+  docker compose run --rm --entrypoint "\
+    rm -Rf /etc/letsencrypt/live/$domains && \
+    rm -Rf /etc/letsencrypt/archive/$domains && \
+    rm -Rf /etc/letsencrypt/renewal/$domains.conf" certbot
+  echo
+
+  echo "### Re-verifying cleanup..."
+  cleanup_status=$(docker compose run --rm --entrypoint "\
+    sh -c 'if [ -d /etc/letsencrypt/live/$domains ]; then echo \"/etc/letsencrypt/live/$domains still exists\"; fi; \
+            if [ -d /etc/letsencrypt/archive/$domains ]; then echo \"/etc/letsencrypt/archive/$domains still exists\"; fi; \
+            if [ -f /etc/letsencrypt/renewal/$domains.conf ]; then echo \"/etc/letsencrypt/renewal/$domains.conf still exists\"; fi; \
+            if [ ! -d /etc/letsencrypt/live/$domains ] && [ ! -d /etc/letsencrypt/archive/$domains ] && [ ! -f /etc/letsencrypt/renewal/$domains.conf ]; then echo \"Cleanup verified.\"; exit 0; else exit 1; fi'" certbot)
+
+  echo "$cleanup_status"
+
+  if [[ "$cleanup_status" == *"still exists"* ]]; then
+    echo "Cleanup verification failed again. Exiting."
+    exit 1
+  fi
 fi
 
 echo
@@ -98,10 +124,10 @@ for domain in "${domains[@]}"; do
 done
 
 email_arg="--email $email"
-if [ -z "$email" ]; then email_arg="--register-unsafely-without-email"; fi
+if [ -z "$email" ];then email_arg="--register-unsafely-without-email"; fi
 
 staging_arg=""
-if [ $staging != "0" ]; then staging_arg="--staging"; fi
+if [ $staging != "0" ];then staging_arg="--staging"; fi
 
 docker compose run --rm --entrypoint "\
   certbot certonly --webroot -w /var/www/certbot \
