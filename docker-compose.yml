@@ -96,12 +96,15 @@ services:
     networks:
       - mynetwork_vm
 
-  certbot:
-    image: certbot/certbot
+  acme:
+    image: neilpang/acme.sh
+    environment:
+      - ACME_HOME=/acme.sh
     volumes:
       - ./letsencrypt/conf:/etc/letsencrypt
       - ./letsencrypt/www:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do sleep 6h & wait $${!}; certbot renew; done'"
+      - ./letsencrypt/acme.sh:/acme.sh
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do sleep 6h & wait $${!}; ./acme.sh --cron; done'"
 
 networks:
   mynetwork_vm:
@@ -110,6 +113,7 @@ networks:
 volumes:
   db_data:
   letsencrypt:
+
 
 # version: '3.9'
 

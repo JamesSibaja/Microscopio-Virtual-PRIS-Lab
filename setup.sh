@@ -60,7 +60,6 @@ export DJANGO_SUPERUSER_PASSWORD=$PASSWORD
 # sudo docker compose exec gunicorn_vm python manage.py shell -c "import sys; exec(sys.stdin.read())" < scripts/create_superuser.py
 sudo docker exec -e DJANGO_SUPERUSER_EMAIL=$DJANGO_SUPERUSER_EMAIL -e DJANGO_SUPERUSER_PASSWORD=$DJANGO_SUPERUSER_PASSWORD $(sudo docker ps -q -f name=gunicorn_vm) python manage.py shell -c "exec(open('/app/scripts/create_superuser.py').read())"
 
-
 # Solicitar y configurar certificados SSL si es producción
 if [[ $MODE == "prod" ]]; then
     sudo ./init-letsencrypt.sh $DOMAIN $EMAIL
