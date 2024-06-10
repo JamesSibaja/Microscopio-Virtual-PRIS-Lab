@@ -28,10 +28,10 @@ echo
 
 # Ensure directories are completely removed
 echo "### Verifying cleanup ..."
-docker compose run --rm --entrypoint "\
+docker compose run --rm --entrypoint "sh -c '\
   if [ -d /etc/letsencrypt/live/$domains ] || [ -d /etc/letsencrypt/archive/$domains ] || [ -f /etc/letsencrypt/renewal/$domains.conf ]; then \
-    echo 'Previous certificates not fully removed. Aborting.'; exit 1; \
-  fi" certbot
+    echo \"Previous certificates not fully removed. Aborting.\"; exit 1; \
+  fi'" certbot
 if [ $? -ne 0 ]; then
   echo "Cleanup verification failed. Exiting."
   exit 1
@@ -94,5 +94,3 @@ echo
 # Reload nginx
 echo "### Reloading nginx ..."
 docker compose exec nginx_vm nginx -s reload
-
-
