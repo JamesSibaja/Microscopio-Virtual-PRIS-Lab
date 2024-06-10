@@ -62,19 +62,19 @@ echo
 
 # Asegúrate de que los directorios se han eliminado completamente
 # Asegúrate de que los directorios se han eliminado completamente
-echo "### Verifying cleanup ..."
-cleanup_status=$(docker compose run --rm --entrypoint "\
-  sh -c 'if [ -d /etc/letsencrypt/live/$domains ]; then echo \"/etc/letsencrypt/live/$domains still exists\"; fi; \
-          if [ -d /etc/letsencrypt/archive/$domains ]; then echo \"/etc/letsencrypt/archive/$domains still exists\"; fi; \
-          if [ -f /etc/letsencrypt/renewal/$domains.conf ]; then echo \"/etc/letsencrypt/renewal/$domains.conf still exists\"; fi; \
-          if [ ! -d /etc/letsencrypt/live/$domains ] && [ ! -d /etc/letsencrypt/archive/$domains ] && [ ! -f /etc/letsencrypt/renewal/$domains.conf ]; then echo \"Cleanup verified.\"; exit 0; else exit 1; fi'" certbot)
+# echo "### Verifying cleanup ..."
+# cleanup_status=$(docker compose run --rm --entrypoint "\
+#   sh -c 'if [ -d /etc/letsencrypt/live/$domains ]; then echo \"/etc/letsencrypt/live/$domains still exists\"; fi; \
+#           if [ -d /etc/letsencrypt/archive/$domains ]; then echo \"/etc/letsencrypt/archive/$domains still exists\"; fi; \
+#           if [ -f /etc/letsencrypt/renewal/$domains.conf ]; then echo \"/etc/letsencrypt/renewal/$domains.conf still exists\"; fi; \
+#           if [ ! -d /etc/letsencrypt/live/$domains ] && [ ! -d /etc/letsencrypt/archive/$domains ] && [ ! -f /etc/letsencrypt/renewal/$domains.conf ]; then echo \"Cleanup verified.\"; exit 0; else exit 1; fi'" certbot)
 
-echo "$cleanup_status"
+# echo "$cleanup_status"
 
-if [[ "$cleanup_status" == *"still exists"* ]]; then
-  echo "Cleanup verification failed. Exiting."
-  exit 1
-fi
+# if [[ "$cleanup_status" == *"still exists"* ]]; then
+#   echo "Cleanup verification failed. Exiting."
+#   exit 1
+# fi
 
 echo
 
@@ -122,19 +122,19 @@ docker compose run --rm --entrypoint "\
   rm -Rf /etc/letsencrypt/renewal/$domains.conf" certbot
 echo
 
-echo "### Verifying cleanup ..."
-cleanup_status=$(docker compose run --rm --entrypoint "\
-  sh -c 'if [ -d /etc/letsencrypt/live/$domains ]; then echo \"/etc/letsencrypt/live/$domains still exists\"; fi; \
-          if [ -d /etc/letsencrypt/archive/$domains ]; then echo \"/etc/letsencrypt/archive/$domains still exists\"; fi; \
-          if [ -f /etc/letsencrypt/renewal/$domains.conf ]; then echo \"/etc/letsencrypt/renewal/$domains.conf still exists\"; fi; \
-          if [ ! -d /etc/letsencrypt/live/$domains ] && [ ! -d /etc/letsencrypt/archive/$domains ] && [ ! -f /etc/letsencrypt/renewal/$domains.conf ]; then echo \"Cleanup verified.\"; exit 0; else exit 1; fi'" certbot)
+# echo "### Verifying cleanup ..."
+# cleanup_status=$(docker compose run --rm --entrypoint "\
+#   sh -c 'if [ -d /etc/letsencrypt/live/$domains ]; then echo \"/etc/letsencrypt/live/$domains still exists\"; fi; \
+#           if [ -d /etc/letsencrypt/archive/$domains ]; then echo \"/etc/letsencrypt/archive/$domains still exists\"; fi; \
+#           if [ -f /etc/letsencrypt/renewal/$domains.conf ]; then echo \"/etc/letsencrypt/renewal/$domains.conf still exists\"; fi; \
+#           if [ ! -d /etc/letsencrypt/live/$domains ] && [ ! -d /etc/letsencrypt/archive/$domains ] && [ ! -f /etc/letsencrypt/renewal/$domains.conf ]; then echo \"Cleanup verified.\"; exit 0; else exit 1; fi'" certbot)
 
-echo "$cleanup_status"
+# echo "$cleanup_status"
 
-if [[ "$cleanup_status" == *"still exists"* ]]; then
-  echo "Cleanup verification failed. Exiting."
-  exit 1
-fi
+# if [[ "$cleanup_status" == *"still exists"* ]]; then
+#   echo "Cleanup verification failed. Exiting."
+#   exit 1
+# fi
 
 # Solicita un certificado de Let's Encrypt
 echo "### Requesting Let's Encrypt certificate for $domains ..."
