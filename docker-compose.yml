@@ -110,6 +110,10 @@ networks:
   mynetwork_vm:
     driver: bridge
 
+networks:
+  mynetwork_vm:
+    driver: bridge
+
 volumes:
   db_data:
   letsencrypt:

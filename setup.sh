@@ -45,6 +45,16 @@ if [[ $MODE == "prod" ]]; then
         sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
     fi
 fi
+
+# Instalar acme.sh si no está instalado
+if [ ! -d "$HOME/.acme.sh" ]; then
+  echo "### Instalando acme.sh ..."
+  curl https://get.acme.sh | sh
+fi
+
+# Cargar acme.sh en el PATH
+export PATH="$HOME/.acme.sh":$PATH
+
 # Construir imágenes Docker
 sudo docker compose build --build-arg MODE=$MODE redis_vm db_vm gunicorn_vm daphne_vm celery_vm nginx_vm
 
@@ -57,7 +67,6 @@ sudo docker compose exec gunicorn_vm python manage.py migrate
 export DJANGO_SUPERUSER_EMAIL=$EMAIL
 export DJANGO_SUPERUSER_PASSWORD=$PASSWORD
 
-# sudo docker compose exec gunicorn_vm python manage.py shell -c "import sys; exec(sys.stdin.read())" < scripts/create_superuser.py
 sudo docker exec -e DJANGO_SUPERUSER_EMAIL=$DJANGO_SUPERUSER_EMAIL -e DJANGO_SUPERUSER_PASSWORD=$DJANGO_SUPERUSER_PASSWORD $(sudo docker ps -q -f name=gunicorn_vm) python manage.py shell -c "exec(open('/app/scripts/create_superuser.py').read())"
 
 # Solicitar y configurar certificados SSL si es producción
