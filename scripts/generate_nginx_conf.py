@@ -127,7 +127,7 @@ def generate_nginx_conf(mode, domain):
         }}
         """
 
-    with open('/etc/nginx/nginx.conf', 'w') as f:
+    with open('nginx.conf', 'w') as f:
         f.write(conf)
 
 if __name__ == '__main__':
