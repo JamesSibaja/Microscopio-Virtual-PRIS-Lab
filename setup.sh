@@ -59,7 +59,7 @@ export PATH="$HOME/.acme.sh":$PATH
 sudo docker compose build --build-arg MODE=$MODE redis_vm db_vm gunicorn_vm daphne_vm celery_vm nginx_vm
 
 # Inicializar y configurar la base de datos PostgreSQL
-sudo docker compose up --no-build -d --no-recreate redis_vm db_vm gunicorn_vm daphne_vm celery_vm nginx_vm
+sudo docker compose up --no-build -d --no-recreate redis_vm db_vm gunicorn_vm daphne_vm celery_vm
 sudo docker compose exec gunicorn_vm python manage.py makemigrations
 sudo docker compose exec gunicorn_vm python manage.py migrate
 
@@ -69,9 +69,16 @@ export DJANGO_SUPERUSER_PASSWORD=$PASSWORD
 
 sudo docker exec -e DJANGO_SUPERUSER_EMAIL=$DJANGO_SUPERUSER_EMAIL -e DJANGO_SUPERUSER_PASSWORD=$DJANGO_SUPERUSER_PASSWORD $(sudo docker ps -q -f name=gunicorn_vm) python manage.py shell -c "exec(open('/app/scripts/create_superuser.py').read())"
 
+# Iniciar Nginx sin SSL
+sudo docker compose up --no-build -d --no-recreate nginx_vm
+
 # Solicitar y configurar certificados SSL si es producción
 if [[ $MODE == "prod" ]]; then
     sudo ./init-letsencrypt.sh $DOMAIN $EMAIL 1
+    # Regenerar configuración de Nginx para SSL
+    python scripts/generate_nginx_conf.py $MODE $DOMAIN --with-ssl
+    # Recargar Nginx con la nueva configuración
+    sudo docker compose exec nginx_vm nginx -s reload
 fi
 
 # Iniciar la aplicación
