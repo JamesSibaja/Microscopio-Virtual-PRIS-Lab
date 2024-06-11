@@ -27,9 +27,11 @@ if [ ! -d "$HOME/.acme.sh" ]; then
   source ~/.bashrc
 fi
 
+mkdir $data_path/live/$domains/
+
 # Obtener certificados
 echo "### Solicitando certificados para $domains ..."
-$HOME/.acme.sh/acme.sh --issue --webroot "$data_path/www" -d "$domains" --email "$email" --force
+$HOME/.acme.sh/acme.sh --issue --webroot "$data_path/www" -d "$domains" --email "$email" --force --log
 
 # Instalar certificados en las rutas correspondientes
 $HOME/.acme.sh/acme.sh --install-cert -d $domains \
