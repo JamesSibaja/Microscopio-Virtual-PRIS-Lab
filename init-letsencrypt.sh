@@ -37,15 +37,12 @@ mkdir -p $data_path/live/$domains/
 echo "### Solicitando certificados para $domains ..."
 $HOME/.acme.sh/acme.sh --issue --webroot "$data_path/www" -d "$domains" --email "$email" --force --log
 
-echo "### Solicitando certificados para $domains ..."
-$HOME/.acme.sh/acme.sh --issue --webroot "/var/www/certbot" -d "$domains" --email "$email" --force --log
-
-
 # Verifica si el proceso de emisión fue exitoso
 if [ $? -ne 0 ]; then
   echo "Error al solicitar certificados para $domains"
   exit 1
 fi
+
 
 # Instalar certificados en las rutas correspondientes
 $HOME/.acme.sh/acme.sh --install-cert -d $domains \
