@@ -4,7 +4,7 @@
 domains=$1
 email=$2
 data_path="./letsencrypt"
-staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
+staging=0 # Cambia a 1 si estás probando
 
 # Verifica que el script se esté ejecutando con privilegios de superusuario
 if [[ "$EUID" -ne 0 ]]; then
@@ -27,11 +27,31 @@ if [ ! -d "$HOME/.acme.sh" ]; then
   source ~/.bashrc
 fi
 
-mkdir $data_path/live/$domains/
+# Cambiar la CA predeterminada a Let's Encrypt
+echo "### Cambiando la CA predeterminada a Let's Encrypt ..."
+$HOME/.acme.sh/acme.sh --set-default-ca --server letsencrypt
+
+# Verificar y crear directorios necesarios
+mkdir -p "$data_path/live/$domains/"
+mkdir -p "$data_path/www"
+mkdir -p "/etc/ssl/certs"
+
+# Configuración temporal de Nginx
+echo "### Configurando Nginx temporalmente para validar $domains ..."
+python generate_nginx_conf.py local "$domains"
+sudo docker cp nginx.conf nginx_vm:/etc/nginx/nginx.conf
+sudo docker compose exec nginx_vm nginx -s reload
 
 # Obtener certificados
 echo "### Solicitando certificados para $domains ..."
 $HOME/.acme.sh/acme.sh --issue --webroot "$data_path/www" -d "$domains" --email "$email" --force --log
+
+if [ $? -ne 0 ]; then
+  echo "### Error al obtener certificados para $domains ..."
+  exit 1
+fi
+
+echo "### Certificados obtenidos con éxito para $domains ..."
 
 # Instalar certificados en las rutas correspondientes
 $HOME/.acme.sh/acme.sh --install-cert -d $domains \
@@ -39,6 +59,10 @@ $HOME/.acme.sh/acme.sh --install-cert -d $domains \
   --fullchain-file $data_path/live/$domains/fullchain.pem \
   --reloadcmd "sudo docker compose exec nginx_vm nginx -s reload"
 
-# Recargar nginx
-echo "### Recargando nginx ..."
-docker compose exec nginx_vm nginx -s reload
+# Configuración final de Nginx
+echo "### Configurando Nginx con SSL para $domains ..."
+python generate_nginx_conf.py prod "$domains"
+sudo docker cp nginx.conf nginx_vm:/etc/nginx/nginx.conf
+sudo docker compose exec nginx_vm nginx -s reload
+
+echo "### Todo listo!"

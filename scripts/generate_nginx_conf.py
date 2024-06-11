@@ -137,3 +137,4 @@ if __name__ == '__main__':
         mode = sys.argv[1]
         domain = sys.argv[2]
         generate_nginx_conf(mode, domain)
+
