@@ -3,8 +3,8 @@
 # Define los parámetros de entrada
 domains=$1
 email=$2
-staging=$3 # Cambia a 1 para usar el servidor de pruebas de Let's Encrypt
 data_path="./letsencrypt"
+staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
 # Verifica que el script se esté ejecutando con privilegios de superusuario
 if [[ "$EUID" -ne 0 ]]; then
@@ -27,39 +27,21 @@ if [ ! -d "$HOME/.acme.sh" ]; then
   source ~/.bashrc
 fi
 
-# Seleccionar el servidor CA basado en el entorno de pruebas o producción
-if [ "$staging" != "0" ]; then
-  echo "### Usando el entorno de pruebas de Let's Encrypt ..."
-  server="https://acme-staging-v02.api.letsencrypt.org/directory"
-else
-  echo "### Usando el entorno de producción de Let's Encrypt ..."
-  server="https://acme-v02.api.letsencrypt.org/directory"
-fi
+# Seleccionar ZeroSSL como el CA predeterminado
+$HOME/.acme.sh/acme.sh --set-default-ca --server https://acme.zerossl.com/v2/DV90
 
-# Configurar acme.sh para usar el servidor seleccionado
-$HOME/.acme.sh/acme.sh --set-default-ca --server "$server"
-
-# Verificar y crear directorios necesarios
-mkdir -p "$data_path/live/$domains/"
-mkdir -p "$data_path/www"
-mkdir -p "/etc/ssl/certs"
-
-# Configuración temporal de Nginx
-echo "### Configurando Nginx temporalmente para validar $domains ..."
-# python generate_nginx_conf.py local "$domains"
-# sudo docker cp nginx.conf nginx_vm:/etc/nginx/nginx.conf
-sudo docker compose up --no-build -d --no-recreate redis_vm db_vm gunicorn_vm daphne_vm celery_vm nginx_vm
+# Crear directorio para los certificados del dominio
+mkdir -p $data_path/live/$domains/
 
 # Obtener certificados
 echo "### Solicitando certificados para $domains ..."
 $HOME/.acme.sh/acme.sh --issue --webroot "$data_path/www" -d "$domains" --email "$email" --force --log
 
+# Verifica si el proceso de emisión fue exitoso
 if [ $? -ne 0 ]; then
-  echo "### Error al obtener certificados para $domains ..."
+  echo "Error al solicitar certificados para $domains"
   exit 1
 fi
-
-echo "### Certificados obtenidos con éxito para $domains ..."
 
 # Instalar certificados en las rutas correspondientes
 $HOME/.acme.sh/acme.sh --install-cert -d $domains \
@@ -67,10 +49,12 @@ $HOME/.acme.sh/acme.sh --install-cert -d $domains \
   --fullchain-file $data_path/live/$domains/fullchain.pem \
   --reloadcmd "sudo docker compose exec nginx_vm nginx -s reload"
 
-# Configuración final de Nginx
-echo "### Configurando Nginx con SSL para $domains ..."
-python generate_nginx_conf.py prod "$domains"
-sudo docker cp nginx.conf nginx_vm:/etc/nginx/nginx.conf
-sudo docker compose exec nginx_vm nginx -s reload
+# Verifica si el proceso de instalación fue exitoso
+if [ $? -ne 0 ]; then
+  echo "Error al instalar certificados para $domains"
+  exit 1
+fi
 
-echo "### Todo listo!"
+# Recargar nginx
+echo "### Recargando nginx ..."
+docker compose exec nginx_vm nginx -s reload
