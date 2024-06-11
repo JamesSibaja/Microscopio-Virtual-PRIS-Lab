@@ -3,8 +3,8 @@
 # Define los parámetros de entrada
 domains=$1
 email=$2
+staging=$3 # Cambia a 1 para usar el servidor de pruebas de Let's Encrypt
 data_path="./letsencrypt"
-staging=0 # Cambia a 1 si estás probando
 
 # Verifica que el script se esté ejecutando con privilegios de superusuario
 if [[ "$EUID" -ne 0 ]]; then
@@ -27,9 +27,17 @@ if [ ! -d "$HOME/.acme.sh" ]; then
   source ~/.bashrc
 fi
 
-# Cambiar la CA predeterminada a Let's Encrypt
-echo "### Cambiando la CA predeterminada a Let's Encrypt ..."
-$HOME/.acme.sh/acme.sh --set-default-ca --server letsencrypt
+# Seleccionar el servidor CA basado en el entorno de pruebas o producción
+if [ "$staging" != "0" ]; then
+  echo "### Usando el entorno de pruebas de Let's Encrypt ..."
+  server="https://acme-staging-v02.api.letsencrypt.org/directory"
+else
+  echo "### Usando el entorno de producción de Let's Encrypt ..."
+  server="https://acme-v02.api.letsencrypt.org/directory"
+fi
+
+# Configurar acme.sh para usar el servidor seleccionado
+$HOME/.acme.sh/acme.sh --set-default-ca --server "$server"
 
 # Verificar y crear directorios necesarios
 mkdir -p "$data_path/live/$domains/"

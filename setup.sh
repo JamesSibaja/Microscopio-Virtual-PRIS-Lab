@@ -71,7 +71,7 @@ sudo docker exec -e DJANGO_SUPERUSER_EMAIL=$DJANGO_SUPERUSER_EMAIL -e DJANGO_SUP
 
 # Solicitar y configurar certificados SSL si es producción
 if [[ $MODE == "prod" ]]; then
-    sudo ./init-letsencrypt.sh $DOMAIN $EMAIL
+    sudo ./init-letsencrypt.sh $DOMAIN $EMAIL 0
 fi
 
 # Iniciar la aplicación
