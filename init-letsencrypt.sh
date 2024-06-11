@@ -48,7 +48,7 @@ mkdir -p "/etc/ssl/certs"
 echo "### Configurando Nginx temporalmente para validar $domains ..."
 # python generate_nginx_conf.py local "$domains"
 # sudo docker cp nginx.conf nginx_vm:/etc/nginx/nginx.conf
-sudo docker compose exec nginx_vm nginx -s reload
+sudo docker compose up --no-build -d --no-recreate redis_vm db_vm gunicorn_vm daphne_vm celery_vm nginx_vm
 
 # Obtener certificados
 echo "### Solicitando certificados para $domains ..."
