@@ -20,7 +20,7 @@ def generate_nginx_conf(mode, domain, with_ssl=False):
     if mode == 'local':
         conf = f"""
         {base_conf}
-        server {
+        server {{
             listen 0.0.0.0:80;
             server_name _;
 
@@ -50,11 +50,12 @@ def generate_nginx_conf(mode, domain, with_ssl=False):
                 alias /app/media/;
             }}
         }}
+        }}
         """
     elif mode == 'prod':
         conf = f"""
         {base_conf}
-        server {
+        server {{
             listen 80;
             server_name {domain};
 
@@ -137,4 +138,3 @@ if __name__ == '__main__':
         domain = sys.argv[2]
         with_ssl = '--with-ssl' in sys.argv
         generate_nginx_conf(mode, domain, with_ssl)
-
