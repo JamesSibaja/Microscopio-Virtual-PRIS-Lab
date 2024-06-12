@@ -5,6 +5,11 @@ import subprocess
 def generate_nginx_conf(mode, domain, with_ssl=False):
     print(f"Generating nginx.conf with mode={mode}, domain={domain}, with_ssl={with_ssl}")
     conf = """
+    events {
+        worker_connections 1024;
+        multi_accept on;
+    }
+
     http {
         client_max_body_size 150G;
         proxy_read_timeout 600s;
