@@ -3,20 +3,24 @@ import os
 import subprocess
 
 def generate_nginx_conf(mode, domain, with_ssl=False):
-    if mode == 'local':
-        conf = f"""
+    base_conf = """
+    http {
         client_max_body_size 150G;
         proxy_read_timeout 600s;
 
-        upstream django_app {{
+        upstream django_app {
             server gunicorn_vm:8765;
-        }}
+        }
 
-        upstream daphne_app {{
+        upstream daphne_app {
             server daphne_vm:8089;
-        }}
+        }
+    """
 
-        server {{
+    if mode == 'local':
+        conf = f"""
+        {base_conf}
+        server {
             listen 0.0.0.0:80;
             server_name _;
 
@@ -49,18 +53,8 @@ def generate_nginx_conf(mode, domain, with_ssl=False):
         """
     elif mode == 'prod':
         conf = f"""
-        client_max_body_size 150G;
-        proxy_read_timeout 600s;
-
-        upstream django_app {{
-            server gunicorn_vm:8765;
-        }}
-
-        upstream daphne_app {{
-            server daphne_vm:8089;
-        }}
-
-        server {{
+        {base_conf}
+        server {
             listen 80;
             server_name {domain};
 
@@ -129,6 +123,8 @@ def generate_nginx_conf(mode, domain, with_ssl=False):
                 }}
             }}
             """
+    
+    conf += "\n}"
 
     with open('nginx.conf', 'w') as f:
         f.write(conf)
@@ -141,3 +137,4 @@ if __name__ == '__main__':
         domain = sys.argv[2]
         with_ssl = '--with-ssl' in sys.argv
         generate_nginx_conf(mode, domain, with_ssl)
+
