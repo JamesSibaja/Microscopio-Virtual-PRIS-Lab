@@ -3,7 +3,7 @@
 # Define los parámetros de entrada
 domains=$1
 email=$2
-data_path="./letsencrypt"
+data_path="./letsencrypt/conf"
 staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
 # Verifica que el script se esté ejecutando con privilegios de superusuario
@@ -57,18 +57,9 @@ fi
 
 # Copiar certificados a la ubicación esperada por Nginx
 echo "### Copiando certificados a la ubicación esperada por Nginx ..."
-mkdir -p /etc/letsencrypt/live/$domains
-cp $data_path/live/$domains/privkey.pem /etc/letsencrypt/live/$domains/privkey.pem
-cp $data_path/live/$domains/fullchain.pem /etc/letsencrypt/live/$domains/fullchain.pem
-
-# # Recargar Nginx para aplicar los nuevos certificados
-# echo "### Recargando Nginx ..."
-# docker compose exec nginx_vm nginx -s reload
-
-# # Verifica si el proceso de recarga fue exitoso
-# if [ $? -ne 0 ]; then
-#   echo "Error al recargar Nginx"
-#   exit 1
-# fi
+mkdir -p ./letsencrypt/conf/live/$domains
+cp $data_path/live/$domains/privkey.pem ./letsencrypt/conf/live/$domains/privkey.pem
+cp $data_path/live/$domains/fullchain.pem ./letsencrypt/conf/live/$domains/fullchain.pem
 
 echo "### Certificados instalados y Nginx recargado exitosamente"
+
