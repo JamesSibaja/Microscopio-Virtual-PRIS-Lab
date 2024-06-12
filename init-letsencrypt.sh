@@ -18,6 +18,10 @@ if [ ! -d "$data_path" ]; then
   mkdir -p "$data_path"
 fi
 
+if [ ! -d "$data_path_conf" ]; then
+  mkdir -p "$data_path_conf"
+fi
+
 # Cargar acme.sh en el PATH
 export PATH="$HOME/.acme.sh":$PATH
 
@@ -37,7 +41,7 @@ mkdir -p $data_path_conf/live/$domains/
 
 # Obtener certificados
 echo "### Solicitando certificados para $domains ..."
-$HOME/.acme.sh/acme.sh --issue --webroot "$data_path_conf/www" -d "$domains" --email "$email" --force --log
+$HOME/.acme.sh/acme.sh --issue --webroot "$data_path/www" -d "$domains" --email "$email" --force --log
 
 # Verifica si el proceso de emisión fue exitoso
 if [ $? -ne 0 ]; then
