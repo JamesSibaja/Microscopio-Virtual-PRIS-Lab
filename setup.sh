@@ -19,8 +19,19 @@ DOMAIN=${domain:-localhost}
 EMAIL=${email:-admin@localhost}
 PASSWORD=$password
 
+if command -v python3 &>/dev/null; then
+    PYTHON_CMD=python3
+elif command -v python &>/dev/null; then
+    PYTHON_CMD=python
+else
+    echo "Python is not installed. Installing Python3..."
+    sudo apt-get update
+    sudo apt-get install -y python3
+    PYTHON_CMD=python3
+fi
+
 # Configurar entorno virtual
-python3 -m venv virtual_microscope/venv
+sudo $PYTHON_CMD -m venv virtual_microscope/venv
 source virtual_microscope/venv/bin/activate
 
 # Instalar pip y dependencias
@@ -28,7 +39,7 @@ pip install --upgrade pip --break-system-packages
 pip install -r requirements.txt
 
 # Generar configuración de Nginx
-python scripts/generate_nginx_conf.py $MODE $DOMAIN
+sudo $PYTHON_CMD scripts/generate_nginx_conf.py $MODE $DOMAIN
 
 # Asegúrate de que los archivos de configuración existan
 if [[ ! -f nginx.conf ]]; then
@@ -75,7 +86,7 @@ sudo docker compose up --no-build -d --no-recreate nginx_vm
 if [[ $MODE == "prod" ]]; then
     sudo ./init-letsencrypt.sh $DOMAIN $EMAIL
     # Regenerar configuración de Nginx para SSL
-    python scripts/generate_nginx_conf.py $MODE $DOMAIN --with-ssl
+    sudo $PYTHON_CMD scripts/generate_nginx_conf.py $MODE $DOMAIN --with-ssl
 fi
 
 # Iniciar la aplicación
