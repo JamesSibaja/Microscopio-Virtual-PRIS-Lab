@@ -57,4 +57,3 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "### Certificados instalados y Nginx recargado exitosamente"
-
