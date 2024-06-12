@@ -47,12 +47,27 @@ fi
 # Instalar certificados en las rutas correspondientes
 $HOME/.acme.sh/acme.sh --install-cert -d $domains \
   --key-file $data_path/live/$domains/privkey.pem \
-  --fullchain-file $data_path/live/$domains/fullchain.pem \
-  --reloadcmd "docker compose exec nginx_vm nginx -s reload"
+  --fullchain-file $data_path/live/$domains/fullchain.pem
 
 # Verifica si el proceso de instalación fue exitoso
 if [ $? -ne 0 ]; then
   echo "Error al instalar certificados para $domains"
+  exit 1
+fi
+
+# Copiar certificados a la ubicación esperada por Nginx
+echo "### Copiando certificados a la ubicación esperada por Nginx ..."
+mkdir -p /etc/letsencrypt/live/$domains
+cp $data_path/live/$domains/privkey.pem /etc/letsencrypt/live/$domains/privkey.pem
+cp $data_path/live/$domains/fullchain.pem /etc/letsencrypt/live/$domains/fullchain.pem
+
+# Recargar Nginx para aplicar los nuevos certificados
+echo "### Recargando Nginx ..."
+docker-compose exec nginx_vm nginx -s reload
+
+# Verifica si el proceso de recarga fue exitoso
+if [ $? -ne 0 ]; then
+  echo "Error al recargar Nginx"
   exit 1
 fi
 
