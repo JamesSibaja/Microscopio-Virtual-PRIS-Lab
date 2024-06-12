@@ -3,6 +3,7 @@
 # Define los parámetros de entrada
 domains=$1
 email=$2
+data_path_conf="./letsencrypt/conf"
 data_path="./letsencrypt/conf"
 staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
@@ -32,11 +33,11 @@ $HOME/.acme.sh/acme.sh --set-default-ca --server https://acme.zerossl.com/v2/DV9
 
 # Crear directorio para los certificados del dominio
 mkdir -p $data_path/www
-mkdir -p $data_path/live/$domains/
+mkdir -p $data_path_conf/live/$domains/
 
 # Obtener certificados
 echo "### Solicitando certificados para $domains ..."
-$HOME/.acme.sh/acme.sh --issue --webroot "$data_path/www" -d "$domains" --email "$email" --force --log
+$HOME/.acme.sh/acme.sh --issue --webroot "$data_path_conf/www" -d "$domains" --email "$email" --force --log
 
 # Verifica si el proceso de emisión fue exitoso
 if [ $? -ne 0 ]; then
@@ -46,8 +47,8 @@ fi
 
 # Instalar certificados en las rutas correspondientes
 $HOME/.acme.sh/acme.sh --install-cert -d $domains \
-  --key-file $data_path/live/$domains/privkey.pem \
-  --fullchain-file $data_path/live/$domains/fullchain.pem
+  --key-file $data_path_conf/live/$domains/privkey.pem \
+  --fullchain-file $data_path_conf/live/$domains/fullchain.pem
 
 # Verifica si el proceso de instalación fue exitoso
 if [ $? -ne 0 ]; then
@@ -56,10 +57,10 @@ if [ $? -ne 0 ]; then
 fi
 
 # Copiar certificados a la ubicación esperada por Nginx
-echo "### Copiando certificados a la ubicación esperada por Nginx ..."
-mkdir -p ./letsencrypt/conf/live/$domains
-cp $data_path/live/$domains/privkey.pem ./letsencrypt/conf/live/$domains/privkey.pem
-cp $data_path/live/$domains/fullchain.pem ./letsencrypt/conf/live/$domains/fullchain.pem
+# echo "### Copiando certificados a la ubicación esperada por Nginx ..."
+# mkdir -p ./letsencrypt/conf/live/$domains
+# cp $data_path/live/$domains/privkey.pem ./letsencrypt/conf/live/$domains/privkey.pem
+# cp $data_path/live/$domains/fullchain.pem ./letsencrypt/conf/live/$domains/fullchain.pem
 
 echo "### Certificados instalados y Nginx recargado exitosamente"
 
