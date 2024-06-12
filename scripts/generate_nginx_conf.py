@@ -5,7 +5,6 @@ import subprocess
 def generate_nginx_conf(mode, domain, with_ssl=False):
     if mode == 'local':
         conf = f"""
-        client_max_body_size 150G;
         proxy_read_timeout 600s;
 
         upstream django_app {{
@@ -19,6 +18,9 @@ def generate_nginx_conf(mode, domain, with_ssl=False):
         server {{
             listen 0.0.0.0:80;
             server_name _;
+
+
+            client_max_body_size 150G;
 
             location / {{
                 proxy_pass http://django_app;
@@ -49,7 +51,6 @@ def generate_nginx_conf(mode, domain, with_ssl=False):
         """
     elif mode == 'prod':
         conf = f"""
-        client_max_body_size 150G;
         proxy_read_timeout 600s;
 
         upstream django_app {{
@@ -63,6 +64,9 @@ def generate_nginx_conf(mode, domain, with_ssl=False):
         server {{
             listen 80;
             server_name {domain};
+
+
+            client_max_body_size 150G;
 
             location /.well-known/acme-challenge/ {{
                 root /var/www/certbot;
@@ -89,6 +93,9 @@ def generate_nginx_conf(mode, domain, with_ssl=False):
             server {{
                 listen 443 ssl;
                 server_name {domain};
+
+
+                client_max_body_size 150G;
 
                 ssl_certificate /etc/letsencrypt/live/{domain}/fullchain.pem;
                 ssl_certificate_key /etc/letsencrypt/live/{domain}/privkey.pem;
