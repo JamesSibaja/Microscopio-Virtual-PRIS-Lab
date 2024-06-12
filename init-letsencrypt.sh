@@ -31,6 +31,7 @@ fi
 $HOME/.acme.sh/acme.sh --set-default-ca --server https://acme.zerossl.com/v2/DV90
 
 # Crear directorio para los certificados del dominio
+mkdir -p $data_path/www
 mkdir -p $data_path/live/$domains/
 
 # Obtener certificados
@@ -43,12 +44,11 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-
 # Instalar certificados en las rutas correspondientes
 $HOME/.acme.sh/acme.sh --install-cert -d $domains \
   --key-file $data_path/live/$domains/privkey.pem \
   --fullchain-file $data_path/live/$domains/fullchain.pem \
-  --reloadcmd "sudo docker compose exec nginx_vm nginx -s reload"
+  --reloadcmd "docker compose exec nginx_vm nginx -s reload"
 
 # Verifica si el proceso de instalación fue exitoso
 if [ $? -ne 0 ]; then
@@ -56,6 +56,5 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-# Recargar nginx
-echo "### Recargando nginx ..."
-docker compose exec nginx_vm nginx -s reload
+echo "### Certificados instalados y Nginx recargado exitosamente"
+

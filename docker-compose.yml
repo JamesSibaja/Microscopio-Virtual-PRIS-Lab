@@ -77,15 +77,12 @@ services:
       - mynetwork_vm
 
   nginx_vm:
-    build:
-      context: .
-      dockerfile: Dockerfile.nginx
-      args:
-        MODE: ${MODE:-local}
+    image: nginx:latest
     ports:
       - "80:80"
       - "443:443"
     volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
       - ./letsencrypt/conf:/etc/letsencrypt
       - ./virtual_microscope:/app
       - ./letsencrypt/www:/var/www/certbot

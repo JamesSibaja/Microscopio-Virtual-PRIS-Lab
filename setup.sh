@@ -72,14 +72,16 @@ sudo docker exec -e DJANGO_SUPERUSER_EMAIL=$DJANGO_SUPERUSER_EMAIL -e DJANGO_SUP
 # Iniciar Nginx sin SSL
 sudo docker compose up --no-build -d --no-recreate nginx_vm
 
-# Solicitar y configurar certificados SSL si es producción
 if [[ $MODE == "prod" ]]; then
-    sudo ./init-letsencrypt.sh $DOMAIN $EMAIL 1
+    sudo ./init-letsencrypt.sh $DOMAIN $EMAIL
     # Regenerar configuración de Nginx para SSL
     python scripts/generate_nginx_conf.py $MODE $DOMAIN --with-ssl
-    # Recargar Nginx con la nueva configuración
-    sudo docker compose exec nginx_vm nginx -s reload
 fi
 
 # Iniciar la aplicación
 sudo docker compose up --no-build -d --no-recreate redis_vm db_vm gunicorn_vm daphne_vm celery_vm nginx_vm
+
+# Recargar Nginx con la nueva configuración
+if [[ $MODE == "prod" ]]; then
+    sudo docker compose exec nginx_vm nginx -s reload
+fi
