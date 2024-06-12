@@ -4,7 +4,7 @@
 domains=$1
 email=$2
 data_path_conf="./letsencrypt/conf"
-data_path="./letsencrypt/conf"
+data_path="./letsencrypt"
 staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
 # Verifica que el script se esté ejecutando con privilegios de superusuario
