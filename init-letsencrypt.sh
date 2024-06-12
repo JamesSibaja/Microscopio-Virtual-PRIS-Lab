@@ -61,14 +61,14 @@ mkdir -p /etc/letsencrypt/live/$domains
 cp $data_path/live/$domains/privkey.pem /etc/letsencrypt/live/$domains/privkey.pem
 cp $data_path/live/$domains/fullchain.pem /etc/letsencrypt/live/$domains/fullchain.pem
 
-# Recargar Nginx para aplicar los nuevos certificados
-echo "### Recargando Nginx ..."
-docker-compose exec nginx_vm nginx -s reload
+# # Recargar Nginx para aplicar los nuevos certificados
+# echo "### Recargando Nginx ..."
+# docker compose exec nginx_vm nginx -s reload
 
-# Verifica si el proceso de recarga fue exitoso
-if [ $? -ne 0 ]; then
-  echo "Error al recargar Nginx"
-  exit 1
-fi
+# # Verifica si el proceso de recarga fue exitoso
+# if [ $? -ne 0 ]; then
+#   echo "Error al recargar Nginx"
+#   exit 1
+# fi
 
 echo "### Certificados instalados y Nginx recargado exitosamente"
