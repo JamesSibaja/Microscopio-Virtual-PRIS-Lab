@@ -122,6 +122,7 @@ def generate_nginx_conf(mode, domain, with_ssl=False):
 
                 location /static/ {{
                     alias /app/staticfiles/;
+                    try_files $uri $uri/ =404;
                 }}
 
                 location /media/ {{

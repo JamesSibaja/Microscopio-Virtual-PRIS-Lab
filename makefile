@@ -17,7 +17,7 @@ setup: fix-docker-permissions
 	@bash setup.sh
 
 run:
-	docker compose up --no-build --no-recreate redis_vm db_vm gunicorn_vm daphne_vm celery_vm nginx_vm
+	docker compose up --no-build -d --no-recreate redis_vm db_vm gunicorn_vm daphne_vm celery_vm nginx_vm
 	if [ "$$MODE" = "production" ]; then \
 		docker compose exec gunicorn_vm python manage.py collectstatic --noinput; \
 	fi
