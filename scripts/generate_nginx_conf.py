@@ -15,12 +15,6 @@ def generate_nginx_conf(mode, domain, with_ssl=False):
         proxy_read_timeout 600s;
         include       /etc/nginx/mime.types;
         default_type  application/octet-stream;
-        
-        types {
-            text/css        css;
-            application/javascript js;
-            text/javascript js;
-        }
 
         upstream django_app {
             server gunicorn_vm:8765;
