@@ -53,8 +53,10 @@
     background-color: #ffffff;
     margin: 20px auto;
     width: 100%;
-    height: calc(100% - 43px);;
+    height: calc(100% - 30px);
     padding: 0%;
+
+    flex-direction: column;
     /* box-shadow: 1px 1px 3px rgba(255, 255, 255, 0); */
     /* padding: 5px 40px 5px 40px;  */
   }
@@ -126,9 +128,6 @@
         width: 100%;
         max-width: 768px;
         height: 100%;
-        /* padding: 0%; */
-        /* box-shadow: 1px 1px 3px rgba(255, 255, 255, 0); */
-        /* padding: 5px 40px 5px 40px;  */subir
     }
     .container {
         margin-top: 0 ;
@@ -140,7 +139,7 @@
 }
 </style>
 
-<div class=" container" >
+<div class="subir container" >
     <div class="title-bar">
         
         <div class = 'title-bar-item' onclick="location.href='{% url 'upload_file' %}'">

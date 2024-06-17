@@ -6,9 +6,6 @@ FROM nginx:latest
 ARG MODE=local
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copia los archivos estáticos y de media (si es necesario)
-# COPY ./app/static /app/static
-# COPY ./app/media /app/media
 
 # Exponer el puerto 80 (este puerto se mapeará en el docker-compose.yml)
 EXPOSE 80

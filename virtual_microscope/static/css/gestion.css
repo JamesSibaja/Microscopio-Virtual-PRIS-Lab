@@ -179,12 +179,13 @@ p {
   right: -0.5rem;
   border: 0.25rem solid rgba(255, 255, 255, 0.85);
 }
-container.cta .cta-innerv {
+.container.cta .cta-innerv {
   position: relative;
   padding: 3rem;
   margin: 0.5rem;
   background-color: rgba(255, 255, 255, 0.85);
 }
+
 
 @media (min-width: 992px) {
   .about-heading .about-heading-img {

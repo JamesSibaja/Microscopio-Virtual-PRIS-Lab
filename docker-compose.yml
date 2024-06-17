@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   db_vm:
     image: postgres:latest
@@ -16,6 +18,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.daphne
+      args:
+        MODE: ${MODE:-development}
     volumes:
       - ./virtual_microscope:/app
     expose:
@@ -33,6 +37,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.gunicorn
+      args:
+        MODE: ${MODE:-development}
     volumes:
       - ./virtual_microscope:/app
       - ./scripts:/app/scripts
@@ -48,6 +54,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.celery
+      args:
+        MODE: ${MODE:-development}
     volumes:
       - ./virtual_microscope:/app
     depends_on:
@@ -102,7 +110,6 @@ services:
       - ./letsencrypt/www:/var/www/certbot
       - ./letsencrypt/acme.sh:/acme.sh
       - /etc/ssl/certs/dhparam.pem:/etc/ssl/certs/dhparam.pem
-
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do sleep 6h & wait $${!}; ./acme.sh --cron; done'"
 
 networks:
