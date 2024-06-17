@@ -84,58 +84,14 @@
   color: #ffffff;
   font-size: 24px;
 }
-.material-icons {
-  padding-top: 12px;
-}
 .button:hover {
     background-color: #1565C0;
     transform: scale(1.1);
     filter: brightness(1.2);
 }
 
-#search_input {
-    display: flex;
-    width: 100%;
-}
 
-.search-box {
-    width: 100%;
-    display: flex;
-}
 
-.search-box input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px 0 0 5px;
-    height: 40px;
-}
-
-.search-box button {
-    background-color: #949494;
-    color: #ffffff;
-    border: none;
-    padding: 8px;
-    border-radius: 0 5px 5px 0;
-
-    height: 40px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.search-box button:hover {
-    background-color: #0056b3;
-}
-
-/* .button-description {
-    font-size: 14px;
-    margin-top: 5px;
-    display: none;
-}
-
-.button:hover .button-description {
-    display: block;
-} */
 </style>
 <script>
   // Definimos una variable llamada 'miVariable' y le asignamos un valor
@@ -148,15 +104,7 @@
   <div class="separar"></div>  
  
     <h1 style="margin-top: 15px;margin-bottom: 15px;text-align: center;">Catálogo</h1>
-    <div id="search_input">
-      <form method="get" class="search-box">  
-          <input type="text" class="form-control" placeholder="Buscar..." name="buscar" value="{{request.GET.buscar}}">
-          <!-- <input type="hidden" name="ver" value="true"> -->
-          <button class="btn btn-primary js-tooltip" type="submit">
-              <i class="material-icons">search</i>
-          </button>
-      </form>
-    </div>
+    
 
 
     

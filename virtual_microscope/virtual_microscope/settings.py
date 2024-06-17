@@ -2,7 +2,7 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = '6xaFi5o7ATB8KMP630m8rIfkEbTXisqXYB2Nk3j+t48='
+SECRET_KEY = 'MOPaRFxqRTXqH28kPXNnJszvNwL9VZcilG72XB+Wd+Y='
 
 DEBUG = True
 
@@ -102,7 +102,9 @@ if DEBUG:
     STATIC_ROOT = None
 else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-    STATICFILES_DIRS = []
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, 'static'), 
+    ]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

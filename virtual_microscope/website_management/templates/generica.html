@@ -143,7 +143,69 @@
   flex-grow: 1;     /* Permite que el contenedor crezca para llenar el espacio disponible */
   display: flex;
 }
+#search_input {
+    display: flex;
+    flex-grow: 1;
+    margin: 0 20px;
+    justify-content: right;
+}
 
+.search-box {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 700px;
+    /* border: 1px #ffffff; */
+}
+
+.search-box input {
+  width: 100%;
+  padding: 5px 10px;
+  border: 0px  solid #bbbbbb;
+  background-color: #ffffff1c;
+  border-radius: 5px 0 0 5px;
+  height: 40px;
+  box-sizing: border-box;
+  /* transition: border 0.3s; */
+  color: #ffffff;
+}
+
+.search-box button {
+    
+  background-color: #ffffff1c;
+  color: #bbbbbb;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 0 5px 5px 0;
+  height: 40px;
+  cursor: pointer;
+  /* transition: background-color 0.3s; */
+  display: flex;
+  align-items: center;
+}
+
+.search-box button:hover {
+    background-color: #e2e2e29a;
+    color: #000000;
+}
+
+/* .search-box button:hover ~ input {
+  border: 1px  solid #e2e2e29a;
+}
+.search-box input:hover {
+  border: 1px  solid #e2e2e29a;
+} */
+
+.search-box input:hover ~ button {
+  background-color: #e2e2e29a;
+  color: #000000;
+}
+@media (max-width: 768px) {
+   
+    .search-box {
+        padding-top: 4px;/* Oculta el panel por defecto */
+    }
+  }
 </style>
   <!-- Add additional CSS in static file -->
 
@@ -194,10 +256,19 @@
               <a class="navbar-brand"  href="#">
                   <img src="{% static 'img/prislab.png' %}" alt="Logo" style="margin-bottom:  2px;max-height: 30px">
               </a>
+             
               <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
                   <span class="navbar-toggler-icon"></span>
               </button>
               <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+                  <div id="search_input">
+                    <form method="get" class="search-box">  
+                        <input type="text" class="form-control" placeholder="Buscar..." name="buscar" value="{{request.GET.buscar}}">
+                        <button class="btn btn-primary js-tooltip" type="submit">
+                            <i style="font-size: 25px;" class="material-icons">search</i>
+                        </button>
+                    </form>
+                  </div>
                   <ul class="navbar-nav ml-auto text-center">
                       <li class="nav-item {% if request.path == '/' %}active{% endif %}" style="display: flex; align-items: center;">
                           <a class="nav-link" href="{% url 'Inicio' %}" ><h6  style="margin-bottom: 0;">Inicio</h6></a>
