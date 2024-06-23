@@ -50,7 +50,18 @@ def generate_nginx_conf(mode, domain, with_ssl=False):
             }
 
             location /static/ {
-                alias /app/static/;
+                root /app/;  # Define el directorio raíz común para todos los alias
+                try_files $uri =404;
+            }
+
+            location /static/microscope/ {
+                alias /app/microscope/static/microscope/;
+                try_files $uri $uri/ =404;
+            }
+
+             location /static/projects/ {
+                alias /app/projects/static/projects/;
+                try_files $uri $uri/ =404;
             }
 
             location /media/ {

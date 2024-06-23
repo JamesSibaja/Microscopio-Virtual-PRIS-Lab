@@ -50,10 +50,6 @@ $(document).ready(function() {
         modal2.style.display = 'none';
     };
 
-    // var i = "{{projectSlide.slide.path}}";
-    // var h = "{{projectSlide.slide.zoomI}}";
-    // var j = "{{projectSlide.slide.zoomM}}";
-
     var notasMenu = document.getElementById('notasMenu');
 
     if (notasMenu.scrollHeight > notasMenu.clientHeight) {
@@ -94,40 +90,6 @@ $(document).ready(function() {
         document.getElementById("geojson_data").value = JSON.stringify(geojson); 
         modal2.style.display = 'block';
     });
-    
-    
-    // save.addEventListener('click', function() {
-    //     var geojsonFeatures = [];
-    //     drawnItems.eachLayer(function(layer) {
-    //         var feature = {
-    //             type: "Feature",
-    //             geometry: layer.toGeoJSON().geometry,
-    //             properties: {
-    //                 color: layer.options.color || "#3388ff", 
-    //                 tooltipMessage: "{{note.name}}",
-    //                 clickMessage: "{{note.description}}"
-    //             }
-    //         };
-            
-    //         if (layer instanceof L.CircleMarker && !(layer instanceof L.Circle)) {
-    //             feature.geometry.type = "Point";
-    //             feature.properties.radius = -1;
-    //         } else if (layer instanceof L.Circle) {
-    //             feature.geometry.type = "Point";
-    //             feature.properties.radius = layer.getRadius();
-    //         }
-            
-    //         geojsonFeatures.push(feature);
-    //     });
-
-    //     var geojson = {
-    //         type: "FeatureCollection",
-    //         features: geojsonFeatures
-    //     };
-
-    //     document.getElementById("geojson_data").value = JSON.stringify(geojson); 
-    //     modal2.style.display = 'block';
-    // });
 
     console.log(geojson_list.length);
     for (var i = 0; i < geojson_list.length; i++) {

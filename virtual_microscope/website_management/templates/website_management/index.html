@@ -51,37 +51,43 @@
             font-size: 1.2em;
             color: #555;
         }
-
         .cta-button {
             display: inline-block;
             padding: 10px 20px;
             margin: 20px 0;
             font-size: 1.2em;
-            color: white;
-            background-color: #007bff;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
+            color: rgb(43, 43, 43);
+            background-color: transparent; /* Fondo transparente */
+            border: 1px solid rgb(11, 24, 52); /* Borde visible */
+            border-radius: 10px;
+            text-decoration: none; /* Sin subrayado */
+            text-align: center; /* Alineación del texto centrada */
         }
 
         .cta-button:hover {
-            background-color: #0056b3;
+            background-color: rgb(11, 24, 52);
+            color: rgb(231, 231, 231);
+            
         }
+
 
         .carousel-container {
             position: relative;
             max-width: 100%;
-            height: 50%;
+            height:50vh; /* Ocupa toda la altura de la vista */
             overflow: hidden;
         }
 
         .carousel {
             display: flex;
             transition: transform 0.5s ease-in-out;
+            width: 300%; /* 100% por cada imagen, asumiendo que hay 3 imágenes */
         }
 
         .carousel img {
             width: 100%;
+            height: 50vh; /* Ocupa toda la altura de la vista */
+            /* object-fit: cover;  */
         }
 
         .carousel-btn {
@@ -102,6 +108,9 @@
         .carousel-btn.right {
             right: 10px;
         }
+
+
+
         .hero-index {
             height: 350px;
           }
@@ -136,57 +145,65 @@
         <div class="section">
           <h2>Explora nuestra plataforma</h2>
           <div class="carousel-container">
-              <button class="carousel-btn left" onclick="plusSlides(-1)">&#10094;</button>
-              <div class="carousel">
-                  <img src="{% static 'slide1.png' %}" alt="Slide 1">
-                  <img src="{% static 'slide2.png' %}" alt="Slide 2">
-                  <img src="{% static 'slide3.png' %}" alt="Slide 3">
-              </div>
-              <button class="carousel-btn right" onclick="plusSlides(1)">&#10095;</button>
-          </div>
+                <button class="carousel-btn left" onclick="plusSlides(-1)">&#10094;</button>
+                <div class="carousel">
+                    <img src="{% static 'slide1.png' %}" alt="Slide 1">
+                    <img src="{% static 'slide2.png' %}" alt="Slide 2">
+                    <img src="{% static 'slide3.png' %}" alt="Slide 3">
+                </div>
+                <button class="carousel-btn right" onclick="plusSlides(1)">&#10095;</button>
+            </div>
+        
+        
+        
             <p>Utiliza el microscopio virtual para examinar nuestras muestras detalladas y aprende más sobre los organismos y estructuras microscópicas.</p>
-            <a href="{% url 'Catalogo' %}" class="cta-button">Explorar Ahora</a>
+            <a href="{% url 'Catalogo' %}" class="nav-link cta-button">Explorar Ahora</a>
         </div>
 
         <div class="section">
             <h2>Crea tus Propios Proyectos</h2>
             <p>Contribuye a nuestra base de datos creando y subiendo tus propias muestras. Comparte tus hallazgos con la comunidad científica.</p>
-            <a href="{% url 'Login' %}" class="cta-button">Crear Proyecto</a>
+            <a href="{% url 'Login' %}" class="nav-link cta-button">Crear Proyecto</a>
+            
         </div>
 
         <div class="section">
             <h2>Interfaz de Administración</h2>
             <p>Si eres administrador, puedes subir nuevas placas virtuales y gestionar el catálogo.</p>
-            <a href="{% url 'upload_file' %}" class="cta-button">Ir a Administración</a>
+            <a href="{% url 'upload_file' %}" class="nav-link cta-button">Ir a Administración</a>
         </div>
     </div>
 </div>
 
 <script>
    let slideIndex = 0;
+showSlides();
+
+function plusSlides(n) {
+    slideIndex += n;
     showSlides();
+}
 
-    function plusSlides(n) {
-        slideIndex += n;
-        showSlides();
+function showSlides() {
+    let slides = document.querySelectorAll('.carousel img');
+    if (slideIndex >= slides.length) {
+        slideIndex = 0;
     }
-
-    function showSlides() {
-        let slides = document.querySelectorAll('.carousel img');
-        if (slideIndex >= slides.length) {
-            slideIndex = 0;
-        }
-        if (slideIndex < 0) {
-            slideIndex = slides.length - 1;
-        }
-        slides.forEach((slide, index) => {
-            slide.style.transform = `translateX(${(index - slideIndex) * 100}%)`;
-        });
+    if (slideIndex < 0) {
+        slideIndex = slides.length - 1;
     }
+    const offset = -slideIndex * 33.33;
+    document.querySelector('.carousel').style.transform = `translateX(${offset}%)`;
+    document.querySelector('.carousel').style.width = `${slides.length * 100}%`; // Asegura que el ancho del contenedor del carrusel es correcto
+    slides.forEach(slide => {
+        slide.style.width = `${100 / slides.length}%`; // Asegura que cada imagen ocupa el 100% del contenedor visible
+    });
+}
 
-    setInterval(() => {
-        plusSlides(1);
-    }, 3000);
+setInterval(() => {
+    plusSlides(1);
+}, 3000);
+
 
 </script>
 

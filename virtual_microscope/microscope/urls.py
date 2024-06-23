@@ -31,6 +31,7 @@ urlpatterns = [
     path('activity_log/', admin_required(views.activity_log), name='activity_log'),
     path('deleteSlide/<int:slide_id>', admin_required(deleteSlide)),
     path('delete/<int:slide_id>', admin_required(delete)),
+    path('reset_slide/<int:slide_id>/', admin_required(views.reset_slide), name='reset_slide'),
     path('upload/', upload_view, name='upload'),
      path('task_status/<str:task_id>/', views.task_status, name='task_status'),
     path('historial/detalles/<int:id>/', historial_detalles, name='historial_detalles'),

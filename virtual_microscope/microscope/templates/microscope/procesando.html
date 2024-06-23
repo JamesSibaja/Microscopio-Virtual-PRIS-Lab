@@ -228,16 +228,6 @@
         {% endfor %}
         </div>
     </div>
-    <!-- <div style="height: 35%;margin-bottom: 4%;overflow-y: scroll;border: 1px solid rgb(54, 54, 54);padding: 10px;">
-      
-        
-        <h5 style="color: #7c7c7c;margin-bottom: 10px;text-align: center;">Láminas con procesamiento fallido</h5>
-        {%for slide in listSlideError%}
-        <div style="width: 74%;display: inline-block;height: 30px;">
-            <h4 type="submit" onclick="location.href='/delete/{{slide.id}}'" style="display: inline-block;color: #740000;">{{slide.name}}!</h4>
-        </div>
-        {%endfor%}
-    </div> -->
 
         <div style = "position: relative;bottom: 5 px;margin: 1% 3% 1% 3%;border-radius:10px; background-color:rgba(221, 220, 220, 0.8);width:94%">
             <button style=" width: 100%;" class="btn btn-outline-dark  btn-block js-tooltip" type="submit" onclick="location.href='{% url 'Catalogo' %}'">Volver al catálogo</button>
@@ -257,33 +247,37 @@
 <script>
     $(document).ready(function() {
         {% for slide in listSlide %}
-            let taskId = '{{ slide.task_id }}';  // Asegúrate de que cada slide tenga su task_id asociado
+            (function() {
+                let taskId = '{{ slide.task_id }}';  // Asegúrate de que cada slide tenga su task_id asociado
+                let slideId = '{{ slide.id }}';
 
-            function updateProgress(taskId, slideId) {
-                $.ajax({
-                    url: `/task_status/${taskId}/`,
-                    success: function(response) {
-                        let percentComplete = (response.current / response.total) * 100;
-                        $(`#progress-bar-${slideId}`).css('width', percentComplete + '%').text(Math.round(percentComplete) + '%');
-                        
-                        if (response.current < response.total) {
-                            setTimeout(function() {
-                                updateProgress(taskId, slideId);
-                            }, 5000);  // Actualizar cada 5 segundos
-                        } else {
-                            $(`#spinner-${slideId}`).hide();
-                            $(`#completed-icon-${slideId}`).show();
+                function updateProgress(taskId, slideId) {
+                    $.ajax({
+                        url: `/task_status/${taskId}/`,
+                        success: function(response) {
+                            let percentComplete = (response.current / response.total) * 100;
+                            $(`#progress-bar-${slideId}`).css('width', percentComplete + '%').text(Math.round(percentComplete) + '%');
+
+                            if (response.current < response.total) {
+                                setTimeout(function() {
+                                    updateProgress(taskId, slideId);
+                                }, 5000);  // Actualizar cada 5 segundos
+                            } else {
+                                $(`#spinner-${slideId}`).hide();
+                                $(`#completed-icon-${slideId}`).show();
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            alert('Error al consultar el estado del task');
                         }
-                    },
-                    error: function(xhr, status, error) {
-                        alert('Error al consultar el estado del task');
-                    }
-                });
-            }
+                    });
+                }
 
-            updateProgress(taskId, '{{ slide.id }}');
+                updateProgress(taskId, slideId);
+            })();
         {% endfor %}
     });
 </script>
+
     
 {% endblock %}

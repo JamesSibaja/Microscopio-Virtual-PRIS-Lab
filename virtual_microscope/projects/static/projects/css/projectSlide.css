@@ -12,6 +12,20 @@
 .custom-big-image-button:hover {
     cursor: pointer;
 }
+#zoom-level {
+    position: relative;
+    z-index: 1000;
+    width:110px;
+    height: 40px;
+    font-size: 20px;
+    top: 10px;
+    left: calc(50% - 45px);
+    background: rgba(255, 255, 255, 0.85);
+    padding-top: 5px; 
+    text-align: center;
+    /* vertical-align: middle; */
+    border-radius: 20px;
+}
 /* @media print {
   
   body {

@@ -230,19 +230,29 @@ def delete(request, slide_id):
 
     return redirect(new_url)
 
+# @login_required
+# @require_http_methods(["POST"])
+def reset_slide(request, slide_id):
+    slide = get_object_or_404(ProcessingHistory, id=slide_id)
+    if slide.raw_slide:
+        raw_slide = slide.raw_slide
+        raw_slide.assembled = False
+        raw_slide.save()
+    return JsonResponse({'success': True})
+
 def historial_detalles(request, id):
     history_entry = get_object_or_404(ProcessingHistory, id=id)
     data = {
         'file_name': history_entry.file_name,
         'user': history_entry.user.username,
         'status': history_entry.get_status_display(),
-        'start_time': history_entry.start_time,
-        'end_time': history_entry.end_time,
+        'start_time': history_entry.start_time.strftime('%Y-%m-%d %H:%M:%S') if history_entry.start_time else '',
+        'end_time':         history_entry.end_time.strftime('%Y-%m-%d %H:%M:%S') if history_entry.end_time else '',
         'duration': history_entry.duration,
         'error_message': history_entry.error_message,
+        'raw_slide': history_entry.raw_slide.name if history_entry.raw_slide else None
     }
     return JsonResponse(data)
-
 
 def deleteSlide(request, slide_id):
     instancia = get_object_or_404(Slide, id=slide_id)

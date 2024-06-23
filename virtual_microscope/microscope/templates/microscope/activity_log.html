@@ -139,19 +139,16 @@
 }
 </style>
 
-<div class="subir container" >
+<div class="subir container">
     <div class="title-bar">
-        
-        <div class = 'title-bar-item' onclick="location.href='{% url 'upload_file' %}'">
-            <h5 style="margin: 0;"  >Archivos</h1>
+        <div class='title-bar-item' onclick="location.href='{% url 'upload_file' %}'">
+            <h5 style="margin: 0;">Archivos</h5>
         </div>
-        <div class = 'title-bar-item' onclick="location.href='{% url 'processing' %}'">
-            
+        <div class='title-bar-item' onclick="location.href='{% url 'processing' %}'">
             <h5 style="margin: 0;">Procesando</h5>
-       
         </div>
-        <div class = 'title-bar-select'>
-            <h5 style="margin: 0;"  >Historial</h1>
+        <div class='title-bar-select'>
+            <h5 style="margin: 0;">Historial</h5>
         </div>
     </div>
     <div class="content">
@@ -165,35 +162,40 @@
             {% endfor %}
         </div>
     </div>
-        <div style = "position: relative;bottom: 5 px;margin: 1% 3% 1% 3%;border-radius:10px; background-color:rgba(221, 220, 220, 0.8);width:94%">
-            <button style=" width: 100%;" class="btn btn-outline-dark  btn-block js-tooltip" type="submit" onclick="location.href='{% url 'Catalogo' %}'">Volver al catálogo</button>
-        </div>
+    <div style="position: relative; bottom: 5px; margin: 1% 3% 1% 3%; border-radius: 10px; background-color: rgba(221, 220, 220, 0.8); width: 94%;">
+        <button style="width: 100%;" class="btn btn-outline-dark btn-block js-tooltip" type="submit" onclick="location.href='{% url 'Catalogo' %}'">Volver al catálogo</button>
+    </div>
 
-        
-        {% if archivo_subido %}
-            <div class="alert alert-success mt-3">
-                Archivo subido exitosamente.
-            </div>
-        {% endif %}
-        
+    {% if archivo_subido %}
+    <div class="alert alert-success mt-3">
+        Archivo subido exitosamente.
+    </div>
+    {% endif %}
+</div>
+<div id="detailsModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Detalles del Procesamiento</h2>
+        <p id="modal-content"></p>
+        <div id="modal-buttons" style="display: none;">
+            <button id="delete-file" class="btn btn-danger">Borrar archivo</button>
+            <button id="reset-slide" class="btn btn-warning">Restablecer</button>
         </div>
-        <div id="detailsModal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h2>Detalles del Procesamiento</h2>
-                <p id="modal-content"></p>
-            </div>
-        </div>
+    </div>
+</div>
 <script>
     // JavaScript for modal
     document.addEventListener('DOMContentLoaded', function() {
         var modal = document.getElementById("detailsModal");
         var span = document.getElementsByClassName("close")[0];
-        
+        var deleteButton = document.getElementById("delete-file");
+        var resetButton = document.getElementById("reset-slide");
+        var currentSlideId = null;
+
         document.querySelectorAll('.history-item').forEach(item => {
             item.addEventListener('click', function() {
                 var id = this.getAttribute('data-id');
-                // Aquí puedes realizar una llamada AJAX para obtener los detalles del procesamiento
+                currentSlideId = id;
                 fetch(`/historial/detalles/${id}/`)
                     .then(response => response.json())
                     .then(data => {
@@ -204,13 +206,53 @@
                             <strong>Inicio:</strong> ${data.start_time}<br>
                             <strong>Fin:</strong> ${data.end_time}<br>
                             <strong>Duración:</strong> ${data.duration}<br>
-                            <strong>Mensaje de Error:</strong> ${data.error_message || 'N/A'}
+                            <strong>Mensaje de Error:</strong> ${data.error_message || 'N/A'}<br>
+                            <strong>Archivo asociado:</strong> ${data.raw_slide || 'Sin archivo asociado'}
                         `;
+                        if (data.status === 'FAILURE') {
+                            document.getElementById("modal-buttons").style.display = 'block';
+                        } else {
+                            document.getElementById("modal-buttons").style.display = 'none';
+                        }
                         modal.style.display = "block";
                     });
             });
         });
-        
+
+        deleteButton.addEventListener('click', function() {
+            if (currentSlideId) {
+                fetch(`/delete_slide/${currentSlideId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        alert('Error al eliminar el archivo.');
+                    }
+                });
+            }
+        });
+
+        resetButton.addEventListener('click', function() {
+            if (currentSlideId) {
+                fetch(`/reset_slide/${currentSlideId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        alert('Error al restablecer el archivo.');
+                    }
+                });
+            }
+        });
+
         span.onclick = function() {
             modal.style.display = "none";
         }
@@ -222,5 +264,6 @@
         }
     });
 </script>
+
     
 {% endblock %}

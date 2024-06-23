@@ -4,18 +4,16 @@ function initializeMap(mapSlide,pos='o',measure='o',draw='o',full='o',slide='o',
     var j = mapSlide.zoomM;
     var k = mapSlide.zoomMin;
     var m = parseFloat(mapSlide.maxLatLng.replace(',', '.'));
-    var clat = parseFloat(mapSlide.centerLat.replace(',', '.'));
-    var clng = parseFloat(mapSlide.centerLng.replace(',', '.'));
     var fe = parseFloat(mapSlide.factor.replace(',', '.'));
     var slide_url_format = "/media/slides/" + i + "/{z}/{y}/{x}.jpg";
     var drawnItems = null;
     var bounds = L.latLngBounds(
-        L.latLng(-m + clat, -m + clng),
-        L.latLng(m + clat, m + clng)
+        L.latLng(-m , -m ),
+        L.latLng(m , m )
     );
 
     var map = L.map('map', {
-        center: [clat, clng],
+        center: [0, 0],
         zoom: h,
         animate: true
     });
@@ -26,6 +24,18 @@ function initializeMap(mapSlide,pos='o',measure='o',draw='o',full='o',slide='o',
         keepBuffer: 8,
         maxZoom: j
     }).addTo(map);
+
+     // Función para actualizar el nivel de zoom en el contenedor
+    function updateZoomLevel() {
+        const zoomLevelElement = document.getElementById('zoom-level');
+        zoomLevelElement.innerHTML = 'X ' + (2**(map.getZoom()-h+2));
+    }
+
+    // Llamar a la función cuando el zoom cambia
+    map.on('zoomend', updateZoomLevel);
+
+    // Inicializar el contenedor con el nivel de zoom actual
+    updateZoomLevel();
 
     if(slide == 's'){
         var customZoomControl = L.control.zoom({
@@ -57,18 +67,7 @@ function initializeMap(mapSlide,pos='o',measure='o',draw='o',full='o',slide='o',
     miniMap.addTo(map);
 
     miniMap._container.style.display = 'none';
-    // var mapContainer = map.getContainer();
-    // mapContainer.addEventListener('mouseenter', function () {
-    //     if (polygonDraw) {
-    //         mapContainer.classList.add('custom-cursor');
-    //     }
-    // });
 
-    // mapContainer.addEventListener('mouseleave', function () {
-    //     if (polygonDraw) {
-    //         mapContainer.classList.remove('custom-cursor');
-    //     }
-    // });
 
     map.attributionControl.setPrefix(false);
    
@@ -284,9 +283,6 @@ function initializeMap(mapSlide,pos='o',measure='o',draw='o',full='o',slide='o',
         }
 
         
-        
-
-        
         map.on(L.Draw.Event.CREATED, function (e) {
             var layer = e.layer;
             console.log(layer.editing);
@@ -295,9 +291,7 @@ function initializeMap(mapSlide,pos='o',measure='o',draw='o',full='o',slide='o',
 
     }
     if (saved == 'v'){
-        // console.log("si save Uno")
         if(mapSlide.noteGeojson!= 'None'){
-            // console.log("si save")
             for (var i = 0; i < mapSlide.noteDraw.features.length; i++) {
                 
                 L.geoJSON(mapSlide.noteDraw.features[i], {

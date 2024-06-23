@@ -154,6 +154,7 @@
     display: flex;
     align-items: center;
     width: 100%;
+    padding-bottom: 5px;
     max-width: 700px;
     /* border: 1px #ffffff; */
 }
@@ -164,7 +165,7 @@
   border: 0px  solid #bbbbbb;
   background-color: #ffffff1c;
   border-radius: 5px 0 0 5px;
-  height: 40px;
+  height: 35px;
   box-sizing: border-box;
   /* transition: border 0.3s; */
   color: #ffffff;
@@ -177,7 +178,7 @@
   border: none;
   padding: 5px 10px;
   border-radius: 0 5px 5px 0;
-  height: 40px;
+  height: 35px;
   cursor: pointer;
   /* transition: background-color 0.3s; */
   display: flex;
@@ -185,7 +186,7 @@
 }
 
 .search-box button:hover {
-    background-color: #e2e2e29a;
+    background-color: #fffefe;
     color: #000000;
 }
 
@@ -197,7 +198,7 @@
 } */
 
 .search-box input:hover ~ button {
-  background-color: #e2e2e29a;
+  background-color: #fffefe;
   color: #000000;
 }
 @media (max-width: 768px) {
@@ -254,7 +255,7 @@
           <nav class="navbar navbar-expand-md sticky-top navbar-dark" style="background-color:rgb(11, 24, 52);margin-left: auto; margin-right: auto;padding-top: 3px;padding-bottom: 3px">  
           <div class="container" style="max-width:100%;background-color: #00000000;">
               <a class="navbar-brand"  href="#">
-                  <img src="{% static 'img/prislab.png' %}" alt="Logo" style="margin-bottom:  2px;max-height: 30px">
+                  <img src="{% static 'img/prislab.png' %}" alt="Logo" style="margin-bottom:  2px;max-height: 32px">
               </a>
              
               <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
@@ -269,7 +270,7 @@
                         </button>
                     </form>
                   </div>
-                  <ul class="navbar-nav ml-auto text-center">
+                  <ul class="navbar-nav ml-auto text-center" style="padding-bottom: 5px;">
                       <li class="nav-item {% if request.path == '/' %}active{% endif %}" style="display: flex; align-items: center;">
                           <a class="nav-link" href="{% url 'Inicio' %}" ><h6  style="margin-bottom: 0;">Inicio</h6></a>
                       </li>
@@ -345,12 +346,12 @@
         <div class="siteorigin-widget-tinymce textwidget">
           <p><span style="color: #000000;"><strong>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ffffff;">&nbsp; SÍGANOS</span></strong></span></p>
         <p><span style="color: #ffffff;"><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _______</strong></span></p>
-        <p><span style="color: #000000;"><a href="https://www.facebook.com/PRISLaboratory/" target="_blank"><img class="wp-image-204 alignleft" src="http://pris.eie.ucr.ac.cr/wp-content/uploads/2016/03/Social-Logos-01.png" alt="Social Logos-01" srcset="https://pris.eie.ucr.ac.cr/wp-content/uploads/2016/03/Social-Logos-01.png 300w, https://pris.eie.ucr.ac.cr/wp-content/uploads/2016/03/Social-Logos-01-150x150.png 150w, https://pris.eie.ucr.ac.cr/wp-content/uploads/2016/03/Social-Logos-01-60x60.png 60w" sizes="(max-width: 30px) 100vw, 30px" width="30" height="30"></a><a href="https://www.youtube.com/user/PRISLaboratory" target="_blank"><img class="wp-image-206 alignleft" src="http://pris.eie.ucr.ac.cr/wp-content/uploads/2016/03/Social-Logos-03.png" alt="Social Logos-03" srcset="https://pris.eie.ucr.ac.cr/wp-content/uploads/2016/03/Social-Logos-03.png 300w, https://pris.eie.ucr.ac.cr/wp-content/uploads/2016/03/Social-Logos-03-150x150.png 150w, https://pris.eie.ucr.ac.cr/wp-content/uploads/2016/03/Social-Logos-03-60x60.png 60w" sizes="(max-width: 30px) 100vw, 30px" width="30" height="30"></a></span></p>
+        <p><span style="color: #000000;"><a href="https://www.facebook.com/PRISLaboratory/" target="_blank"><img class="wp-image-204 alignleft" src="{% static 'img/facebook.png' %}" alt="Social Logos-01" width="30" height="30"></a><a href="https://www.youtube.com/user/PRISLaboratory" target="_blank"><img class="wp-image-206 alignleft" src="{% static 'img/youtube.png' %}" alt="Social Logos-03"  width="30" height="30"></a></span></p>
         <p></p>
         </div>
         </div></aside></div><div class="widget-2 widget-last footer-widget"><aside id="sow-editor-10" class="widget widget_sow-editor"><div class="so-widget-sow-editor so-widget-sow-editor-base">
         <div class="siteorigin-widget-tinymce textwidget">
-          <p><a href="http://www.ucr.ac.cr/" target="_blank"><img class="alignleft wp-image-1429" src="http://pris.eie.ucr.ac.cr/wp-content/uploads/2017/02/firma-horizontal-dos-lineas-blanco.png" width="260" height="77"></a></p>
+          <p><a href="http://www.ucr.ac.cr/" target="_blank"><img class="alignleft wp-image-1429" src="{% static 'img/ucr.png' %}" width="260" height="77"></a></p>
         </div>
         </div></aside></div>						</div> 
                                         </div> <!-- Row -->

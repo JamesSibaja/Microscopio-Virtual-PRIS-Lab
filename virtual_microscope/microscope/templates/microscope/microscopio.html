@@ -22,14 +22,16 @@
 
 <!-- Contenido HTML del template -->
 <div class="container container_body">
-    <div class="separar"></div>  
+    <!-- <div class="separar"></div>   -->
 
     <!-- Contenido JavaScript del template -->
 
     <script type="text/javascript" src="{% static 'microscope/js/micro.js' %}"></script>
     <script type="text/javascript" src="{% static 'microscope/js/microscopio.js' %}"></script>
-    <div id="map"></div>   
-
+    <div id="map">
+        <div id="zoom-level">Zoom Level: 0</div>
+    </div>   
+     
     <!-- Botones y otros elementos HTML -->
     <button class="volverButton btn btn-dark js-tooltip" type="submit" onclick="location.href='{% url 'Catalogo' %}'">Volver al catálogo</button>
 </div>
