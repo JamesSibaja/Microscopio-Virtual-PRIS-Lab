@@ -26,17 +26,6 @@
     color:rgb(197, 89, 40);
     display: inline-block;
   }
-  /* .toggle-bar {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      height: 15px;
-      width: 30px; 
-      background-color: #929292;
-      text-align: center;
-      cursor: pointer;
-  } */
   .restricted-text {
         /* border: 2px solid #fff; */
         
@@ -57,19 +46,6 @@
       transition: height 0.3s ease;
       width: 20%;
   }
-  /* .toolbar2 {
-      position: fixed;
-      display: none;
-      background-color: #91919170;
-      z-index: 1; 
-      color: #000000;
-      padding: 10px;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 50%;
-      transition: height 0.3s ease;
-  } */
   .toolbar2 {
         position: fixed;
         display: none;
@@ -107,43 +83,7 @@
   .project-list{
     width: 75%;
   }
-  /* #search_input {
-      display: flex;
-      width: 100%;
-  }
 
-  .search-box {
-      width: 100%;
-      display: flex;
-  }
-
-  .search-box input {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 5px 0 0 5px;
-      height: 40px;
-  }
-
-  .search-box button {
-      background-color: #949494;
-      color: #ffffff;
-      border: none;
-      padding: 8px;
-      border-radius: 0 5px 5px 0;
-
-      height: 40px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-  }
-
-  .search-box button:hover {
-      background-color: #0056b3;
-  } */
-    /* Estilos cuando la barra de herramientas está contraída 
-     .collapsed {
-        height: 50px; /* Altura cuando está contraída 
-    } */
 
   @media (max-width: 768px) {
     .toolbar2 {
@@ -178,36 +118,8 @@
   <button class="btn btn-outline-dark js-tooltip" type="submit" onclick="location.href='{% url 'Logout' %}'">Cerrar Sesión </button>
 
   <div style="width: 100%;height: 3%;"></div>
-  <!-- <div class='search'> -->
-    <!-- <form method="get" >         
-      <div id ='search_input' style="padding: 5%;padding-left: 0%;">
-        
-          
-          <input type="text" class="form-control" placeholder="Buscar ..." name ='buscar' value="{{request.GET.buscar}}">
-          <div style="width: 100%;padding-top: 5%;">
-          
-            <button class="btn btn-dark js-tooltip" type="submit" >Buscar proyecto</button>
-          </div>
-        </div>
-             
+   
     
-    
-    </form> -->
-    <!-- <div class="search" style="width: 100%;">
-      <form method="get" class="search-box">         
-        <div id ='search_input' style="margin-top: 20px;padding: 5%;padding-left: 0%;width: 100%;">
-          
-            
-            
-               
-          <input type="text" class="form-control" placeholder="Buscar..." name="buscar" value="{{request.GET.buscar}}">
-        
-          <button class="btn btn-primary js-tooltip" type="submit">
-              <i class="material-icons">search</i>
-          </button>
-        </div>
-      </form>
-      </div>  -->
   
     <div style="padding: 1%;width: 100%;"></div>
     <div style="width: 100%;height: 3%;"></div>

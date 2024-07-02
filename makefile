@@ -46,3 +46,20 @@ fix-docker-permissions:
 	@sudo usermod -aG docker $$(whoami)
 	@sudo chmod 666 /var/run/docker.sock
 
+# requirements:
+# 	@if command -v python3 &>/dev/null; then \
+# 		PYTHON_CMD=python3; \
+# 	elif command -v python &>/dev/null; then \
+# 		PYTHON_CMD=python; \
+# 	else \
+# 		echo "Python is not installed. Installing Python3..."; \
+# 		sudo apt-get update; \
+# 		sudo apt-get install -y python3; \
+# 		PYTHON_CMD=python3; \
+# 	fi; \
+# 	if [ ! -d "virtual_microscope/venv" ]; then \
+# 		sudo $$PYTHON_CMD -m venv virtual_microscope/venv; \
+# 	fi; \
+# 	. virtual_microscope/venv/bin/activate; \
+# 	pip install --upgrade pip; \
+# 	pip install -r requirements.txt

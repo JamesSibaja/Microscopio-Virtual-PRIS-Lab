@@ -7,6 +7,7 @@ function initializeMap(mapSlide,pos='o',measure='o',draw='o',full='o',slide='o',
     var fe = parseFloat(mapSlide.factor.replace(',', '.'));
     var slide_url_format = "/media/slides/" + i + "/{z}/{y}/{x}.jpg";
     var drawnItems = null;
+    // var slideColor = mapslide.color;
     var bounds = L.latLngBounds(
         L.latLng(-m , -m ),
         L.latLng(m , m )

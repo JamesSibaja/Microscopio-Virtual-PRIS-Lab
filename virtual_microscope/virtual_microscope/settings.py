@@ -2,7 +2,7 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = 'MOPaRFxqRTXqH28kPXNnJszvNwL9VZcilG72XB+Wd+Y='
+SECRET_KEY = 'hVyaC0it2D4vr7pi/I0nUssgfDGO3rBaFkkBYjcaF6I='
 
 DEBUG = True
 
@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django_extensions',
+    'colorfield',
     'channels',
     'daphne',
     'django.contrib.staticfiles',

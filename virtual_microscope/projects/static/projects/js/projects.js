@@ -12,6 +12,11 @@ $(document).ready(function() {
     var cerrarModal2 = document.getElementById('cerrarModal2');
     var numMessages = -15;
     var messageUpdate = false;
+
+    
+    var userTimezone = moment.tz.guess();
+    document.cookie = "timezone=" + userTimezone + ";path=/";
+    
     
     String.prototype.hashCode = function() {
         var hash = 0;
@@ -122,6 +127,22 @@ $(document).ready(function() {
                 dates = dates.slice(numMessages);
                 usersId = usersId.slice(numMessages);
                 for (var i = 0; i < messages.length ; i++) {
+                    if(i==0){
+                        html += '<div style="position: relative;float:left;height:45px; width: 100%;">' +
+                                    '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 30px; width: 100px; border-radius: 5px; background-color: rgba(220, 220, 220, 0.6); text-align: center;">' +
+                                        '<p style="margin: 0;">' + dates[i][0] + '</p>' +
+                                    '</div>' +
+                                '</div>';
+                    }else{
+                        if (dates[i][0] != lastDate ) {
+                            html += '<div style="position: relative;float:left;height:45px; width: 100%;">' +
+                                        '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 30px; width: 100px; border-radius: 5px; background-color: rgba(220, 220, 220, 0.6); text-align: center;">' +
+                                            '<p style="margin: 0;">' + dates[i][0] + '</p>' +
+                                        '</div>' +
+                                    '</div>';
+                            
+                        }
+                    }
                     if(usersId[i] != userId){
                         html += '<div style=" position: relative; left: 4%;float: left;padding: 2%; box-shadow: 1px 1px 3px rgb(100, 99, 99);border-radius:0px 10px 10px 10px;background-color:rgb(255, 255, 255);min-width:35%;max-width:80%">'+
                                 '<p style="margin-bottom: 0px;font-size: 15px;color:'+generarColorAleatorio(names[i])+'"><b>'+names[i]+':</b></p>'+
@@ -140,14 +161,7 @@ $(document).ready(function() {
                                 '<div style="float:left;height:10px;width:100%"></div>'; 
 
                     }
-                    if (dates[i][0] != lastDate && i != 0) {
-                        html += '<div style="position: relative;float:left;height:45px; width: 100%;">' +
-                                    '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 30px; width: 100px; border-radius: 5px; background-color: rgba(220, 220, 220, 0.6); text-align: center;">' +
-                                        '<p style="margin: 0;">' + dates[i][0] + '</p>' +
-                                    '</div>' +
-                                '</div>';
-                        
-                    }
+                    
                     lastDate = dates[i][0];
                 }
                 
@@ -207,7 +221,7 @@ $(document).ready(function() {
     $('#placas_btn').on('click', function() {
         //document.getElementById("make").value = true; 
         hideMenu();
-        optionMenu = 1;
+        optionMenu= 1;
         chatInput.style.display = 'none';
         actualizarDatos('/datos_actualizados_placas/'+project+'/_','placas');
 
@@ -215,7 +229,7 @@ $(document).ready(function() {
     $('#catalogo_btn').on('click', function() {
         //document.getElementById("make").value = true; 
         chatInput.style.display = 'none';
-        optionMenu = 2;
+        optionMenu= 2;
         hideMenu();
         actualizarDatos('/datos_actualizados_catalogo/'+project+'/_','catalogo');
 
@@ -264,25 +278,25 @@ $(document).ready(function() {
         if(optionMenu<2){
             buscarInfo= document.getElementById("buscarDato").value;
             
-            document.getElementById("buscarDato").value = '';
+            // document.getElementById("buscarDato").value = '';
             actualizarDatos('/datos_actualizados_placas/'+project+'/'+buscarInfo,'placas');
         }
         if(optionMenu==2){
             
             buscarInfo= document.getElementById("buscarDato").value;
-            document.getElementById("buscarDato").value = '';
+            // document.getElementById("buscarDato").value = '';
             actualizarDatos('/datos_actualizados_catalogo/'+project+'/'+buscarInfo,'catalogo');
         }
         if(optionMenu==3){
             buscarInfo= document.getElementById("buscarDato").value;
 
-            document.getElementById("buscarDato").value = '';
+            // document.getElementById("buscarDato").value = '';
             actualizarDatos('/datos_actualizados_colaboradores/'+project+'/'+buscarInfo,'colaboradores');
         }
         if(optionMenu==4){
             buscarInfo= document.getElementById("buscarDato").value;
 
-            document.getElementById("buscarDato").value = '';
+            // document.getElementById("buscarDato").value = '';
             actualizarDatos('/datos_actualizados_chat/'+project+'/'+buscarInfo,'chat');
         }
     });
@@ -326,39 +340,6 @@ $(document).ready(function() {
         var dataMap = initializeMap(slideMap);
         var map = dataMap[0];  
 
-        // var imageBounds = L.latLngBounds(
-        //     L.latLng(-62, -115),  // Coordenadas del borde inferior izquierdo
-        //     L.latLng(62, 115)   // Coordenadas del borde superior derecho
-        // );
-
-        // var map = L.map('map', {
-        //     center: [0,0],
-        //     zoom: h,
-        //     animate: true
-        // });
-        // var layer =  L.tileLayer(slide_url_format, {
-        //     minZoom:2,
-        //     noWrap: true,
-        //     keepBuffer:8,
-        //     maxZoom:j
-        // }).addTo(map);
-        // map.attributionControl.setPrefix(false);
-        // var miniMap = new L.Control.MiniMap(
-        //     L.tileLayer(slide_url_format),
-        //     { toggleDisplay: true }
-        // );
-
-        // // Agrega el minimapa al mapa principal
-        // miniMap.addTo(map);
-            // var creditsControl = L.controlCredits({
-            //     imageurl: '/media/2.jpg',
-            //     tooltip: 'Made by PrisLab',
-            //     width: '45px',
-            //     height: '45px',
-
-            //     imagealt: "Créditos personalizados alternativos",
-            //     expandcontent: 'Interactive mapping<br/>by <a href="https://pris.eie.ucr.ac.cr/" target="_blank">GreenInfo Network</a>',
-            // }).addTo(map);
         if(optionNum==1){
             for (var i = 0; i < geojson_list.length; i++) {
                 var geojson = JSON.parse(geojson_list[i].geojson);
@@ -389,37 +370,6 @@ $(document).ready(function() {
                 }).addTo(map);
             }
         }
-        //var capaGeoJSON = L.geoJSON(datosGeoJSON).addTo(map);
-        
-        // var pos = map.getBounds();
-        // var pos2 = pos.getNorthWest();
-        // var pos11 = pos2.lat;
-        // var pos12 = pos2.lng;
-        // var pos3 = pos.getSouthEast()
-        // var pos21 = pos3.lat;
-        // var pos22 = pos3.lng;
-        // var popup = L.popup();  
-    
-        
-        // var mapContainer = map.getContainer();
-        // mapContainer.addEventListener('mouseenter', function() {
-        //     if(polygonDraw){
-        //         mapContainer.classList.add('custom-cursor');
-        //     }
-        // });
-        // mapContainer.addEventListener('mouseleave', function() {
-        //     if(polygonDraw){
-        //         mapContainer.classList.remove('custom-cursor');
-        //     }
-        // });
-        // map.on('zoomstart', function () {
-        //     map.setMaxBounds(null);
-        // });
-
-        // // Restablecer los límites cuando finaliza el zoom
-        // map.on('zoomend', function () {
-        //     map.setMaxBounds(imageBounds);
-        // });
     }
     const chatSocket = new WebSocket(
     "ws://"+host+":80/ws/projects/"+project+"/"
@@ -436,7 +386,7 @@ $(document).ready(function() {
     messageList.addEventListener('scroll', function() {
         // Verifica si el usuario ha desplazado hasta la parte superior del panel
         
-        if (messageList.scrollTop === 0 && optionMenu==4) {
+        if (messageList.scrollTop === 0 && optionNum==4) {
             // Incrementa la cantidad de mensajes a mostrar (por ejemplo, de 30 a 60)
             console.log(60);
             numMessages = numMessages-15;
@@ -448,31 +398,67 @@ $(document).ready(function() {
         }
     });
 
-    chatSocket.onmessage = (event) => {
-        const messageData = JSON.parse(event.data);
-        const messageItem = document.createElement('li');
-        // messageItem.innerText = `${messageData.user}: ${messageData.message}`;
-        if(`${messageData.user}` != userId){
-            messageItem.innerHTML = '<div style=" position: relative; left: 4%;float: left;padding: 2%; box-shadow: 1px 1px 3px rgb(100, 99, 99);border-radius:0px 10px 10px 10px;background-color:rgb(255, 255, 255);min-width:35%;max-width:80%">'+
-                    '<p style="margin-bottom: 0px;font-size: 15px;color:'+generarColorAleatorio(`${messageData.username}`)+'"><b>'+`${messageData.username}`+':</b></p>'+
-                    `${messageData.message}`+
-                    '<p style="margin-bottom: 0px;font-size: 12px;color:rgb(100,100,100);text-align: right; ">'+`${messageData.fecha}`+'</p>'+
-                    '</div >' +
-                    '<div style="float:left;height:10px;width:100%"></div>';                    
-        }else{
-            messageItem.innerHTML = '<div style="position: relative; right: 4%;float: right;padding: 2%; box-shadow: 1px 1px 3px rgb(100, 99, 99);border-radius:10px 0px 10px 10px;background-color:rgb(240, 240, 255);min-width:35%;max-width:80%">'+
-                    
-                `${messageData.message}`+
-                    '<p style="margin-bottom: 0px;font-size: 12px;color:rgb(100,100,100);text-align: right; ">'+`${messageData.fecha}`+'</p>'+
-                    '</div >' +
-                    '<div style="float:left;height:10px;width:100%"></div>'; 
+    let lastDate = '';
 
-        }
-        console.log(messageItem);
-        messageList.appendChild(messageItem);
-        numMessages=numMessages-1;
-        scrollToBottom();
-    };
+        chatSocket.onmessage = (event) => {
+            const messageData = JSON.parse(event.data);
+            const messageItem = document.createElement('li');
+
+            // Asegúrate de que la fecha esté en formato ISO 8601
+            let messageDateTime = messageData.fecha;
+
+            // Parsear la fecha y hora con moment.js
+            let parsedDateTime;
+            if (moment(messageDateTime, moment.ISO_8601, true).isValid()) {
+                parsedDateTime = moment.utc(messageDateTime);
+            } else {
+                // Si no es una fecha ISO 8601, intenta con diferentes formatos
+                parsedDateTime = moment.utc(messageDateTime, "hh:mm A");
+                if (!parsedDateTime.isValid()) {
+                    console.error("Invalid date format:", messageDateTime);
+                    return;
+                }
+            }
+
+            // Convertir la fecha al formato local del usuario
+            const userTimezone = moment.tz.guess();
+            const localTime = parsedDateTime.tz(userTimezone).format('hh:mm A');
+            const localDate = parsedDateTime.tz(userTimezone).format('YYYY-MM-DD');
+
+            let html = '';
+
+            // Comprobar si la fecha es diferente a la última fecha procesada
+            if (localDate != lastDate) {
+                html += '<div style="position: relative;float:left;height:45px; width: 100%;">' +
+                            '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 30px; width: 100px; border-radius: 5px; background-color: rgba(220, 220, 220, 0.6); text-align: center;">' +
+                                '<p style="margin: 0;">' + localDate + '</p>' +
+                            '</div>' +
+                        '</div>';
+                lastDate = localDate;
+            }
+
+            if(`${messageData.user}` != userId){
+                html += '<div style="position: relative; left: 4%;float: left;padding: 2%; box-shadow: 1px 1px 3px rgb(100, 99, 99);border-radius:0px 10px 10px 10px;background-color:rgb(255, 255, 255);min-width:35%;max-width:80%">'+
+                        '<p style="margin-bottom: 0px;font-size: 15px;color:'+generarColorAleatorio(`${messageData.username}`)+'"><b>'+`${messageData.username}`+':</b></p>'+
+                        `${messageData.message}`+
+                        '<p style="margin-bottom: 0px;font-size: 12px;color:rgb(100,100,100);text-align: right; ">'+`${localTime}`+'</p>'+
+                        '</div >' +
+                        '<div style="float:left;height:10px;width:100%"></div>';                    
+            } else {
+                html += '<div style="position: relative; right: 4%;float: right;padding: 2%; box-shadow: 1px 1px 3px rgb(100, 99, 99);border-radius:10px 0px 10px 10px;background-color:rgb(240, 240, 255);min-width:35%;max-width:80%">'+
+                        `${messageData.message}`+
+                        '<p style="margin-bottom: 0px;font-size: 12px;color:rgb(100,100,100);text-align: right; ">'+`${localTime}`+'</p>'+
+                        '</div >' +
+                        '<div style="float:left;height:10px;width:100%"></div>'; 
+            }
+
+            messageItem.innerHTML = html;
+            console.log(messageItem);
+            messageList.appendChild(messageItem);
+            numMessages = numMessages - 1;
+            scrollToBottom();
+        };
+        
 
     document.getElementById('message-form').addEventListener('submit', (event) => {
         event.preventDefault();

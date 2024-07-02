@@ -3,6 +3,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'virtual_microscope.settings')
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
+from colorfield.fields import ColorField
 
 # Create your models here.
 class OpenSlide(models.Model):
@@ -54,6 +55,7 @@ class ProcessingHistory(models.Model):
 class Slide(models.Model):
     name = models.CharField(unique=True, max_length=50)
     description = models.CharField(max_length=500)
+    color = ColorField(default='#FFFFFF',null=True)
     assembled = models.BooleanField(default=False)
     rawSlide = models.ForeignKey(OpenSlide, on_delete=models.CASCADE, null=True)
     task_id = models.CharField(max_length=255, null=True, blank=True)
@@ -62,11 +64,8 @@ class Slide(models.Model):
     zoomMin = models.IntegerField(null=True)
     path = models.CharField(max_length=50,null=True)
     image = models.ImageField(upload_to='slides',null=True,)
-    # centerLat = models.DecimalField(max_digits=10, decimal_places=8, null=True)
-    # centerLng = models.DecimalField(max_digits=10, decimal_places=8, null=True)
     maxLatLng = models.DecimalField(max_digits=10, decimal_places=8, null=True)
     factor = models.DecimalField(max_digits=10, decimal_places=8, null=True)
-    error = models.BooleanField(default=False,null=True)
 
     def __str__(self):
         return self.name

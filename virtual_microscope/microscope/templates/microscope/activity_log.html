@@ -196,25 +196,34 @@
             item.addEventListener('click', function() {
                 var id = this.getAttribute('data-id');
                 currentSlideId = id;
+
+                // console.log(`Enviando solicitud para el id: ${id}`);  // Añade esto
                 fetch(`/historial/detalles/${id}/`)
-                    .then(response => response.json())
+                    .then(response => {
+                        console.log(`Respuesta recibida para el id: ${id}`);  // Añade esto
+                        return response.json();
+                    })
                     .then(data => {
+                        // console.log(`Estado recibido: ${data.status}`);  // Verifica el valor aquí
                         document.getElementById("modal-content").innerHTML = `
                             <strong>Nombre del archivo:</strong> ${data.file_name}<br>
                             <strong>Usuario:</strong> ${data.user}<br>
-                            <strong>Estado:</strong> ${data.status}<br>
+                            <strong>Estado:</strong> ${data.status_display}<br>
                             <strong>Inicio:</strong> ${data.start_time}<br>
                             <strong>Fin:</strong> ${data.end_time}<br>
                             <strong>Duración:</strong> ${data.duration}<br>
                             <strong>Mensaje de Error:</strong> ${data.error_message || 'N/A'}<br>
                             <strong>Archivo asociado:</strong> ${data.raw_slide || 'Sin archivo asociado'}
                         `;
-                        if (data.status === 'FAILURE') {
+                        if (data.status === 'FAILURE' && data.raw_slide ) {
                             document.getElementById("modal-buttons").style.display = 'block';
                         } else {
                             document.getElementById("modal-buttons").style.display = 'none';
                         }
                         modal.style.display = "block";
+                    })
+                    .catch(error => {
+                        console.error(`Error al obtener los detalles para el id: ${id}`, error);
                     });
             });
         });

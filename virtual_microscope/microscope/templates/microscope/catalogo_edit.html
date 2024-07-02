@@ -1,164 +1,9 @@
 <!-- se extiende la plantilla genérica-->
 {% extends "generica.html" %}
+{% load static %}
 {% block content %}
 
-  
-<style>
-
-
-.product-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-  margin: 20px;
-}
-
-/* .product {
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(61, 61, 61, 0.473);
-    background-color: #999999; */
-    
-    /* border: 1px solid #383838; 
-    width: 27%;
-    height: 30%;
-    text-align: center;
-    padding: 20px;
-    margin: 2%;
-} */
-
-.product {
-        border-radius: 8px;
-        width: 28%;
-        min-width: 300px; /* Ancho mínimo para el contenedor */
-        height: 30%;
-        text-align: center;
-        padding: 2px;
-        margin: 1%;
-    }
-
-    .product {
-    position: relative;
-}
-
-.product .product-image-container {
-    position: relative;
-}
-
-.product .product-image {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    box-shadow: 0 4px 6px rgba(61, 61, 61, 0.473);
-    border: 1px solid #383838; 
-    border-radius: 8px;
-    transition: transform 0.3s ease;
-
-    filter: brightness(0.5);
-}
-
-.product:hover .product-image {
-    transform: scale(1.05);
-}
-
-.product .edit-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    color: #ffffff;
-    transform: translate(-50%, -50%);
-    opacity: 1;
-    transition: opacity 0.3s ease;
-}
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 2;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.4);
-}
-
-.modal-contenido {
-  background-color: #fff;
-  margin: 10% auto;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  width: 60%;
-}
-
-.cerrar {
-  color: #aaaaaa;
-  float: right;
-  font-size: 24px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.boton-cerrar {
-  padding: 8px 16px;
-  margin-right: 10px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.boton-enviar {
-  padding: 8px 16px;
-  padding: 8px 16px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-/* .product:hover .edit-text {
-    opacity: 1;
-} */
-
-.product-name {
-    font-size: 1.2rem;
-    font-weight: bold;
-}
-
-.product-description {
-    margin: 10px 0;
-    color: #555;
-    overflow-y: scroll;
-    max-height: 120px;
-}
-.button {
-  display: inline-block;
-  width: 50px;
-  height: 50px;
-  margin-right: 10px;
-  background-color: #356b67;
-  border-radius: 8px;
-  text-align: center;
-  line-height: 50px;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
-  color: #ffffff;
-  font-size: 24px;
-}
-
-.button:hover {
-    background-color: #1565C0;
-    transform: scale(1.1);
-    filter: brightness(1.2);
-}
-
-
-/* .button-description {
-    font-size: 14px;
-    margin-top: 5px;
-    display: none;
-}
-
-.button:hover .button-description {
-    display: block;
-} */
-</style>
+<link rel="stylesheet" type="text/css" href="{% static 'microscope/css/catalogo_edit.css' %}">
 <script>
   // Definimos una variable llamada 'miVariable' y le asignamos un valor
   val1 = 2;
@@ -174,57 +19,44 @@
   // Mostramos el valor de la variable en el elemento HTML con el id 'resultado'
   // document.getElementById("resultado").textContent = miVariable;
 </script>
-<div class="container" style="background-color:rgba(255, 255, 255, 0);flex-direction: column;height: 100%;height: auto;min-height: 100vh;" >
+<div class="container" style="background-color:rgba(255, 255, 255, 0);flex-direction: column;height: 100%;height: auto;min-height: 100vh;margin-top: 25px;" >
   <div class="separar"></div>  
+  <div style="display: flex; flex-wrap: wrap; margin-top: 25px;">
+  <div style="width: calc(100% - 250px);min-width: 500px;position: relative;float: left;">
   {%if delete_edit%}
-    <h1 style="margin-top: 15px;margin-bottom: 15px;text-align: center;"> *Eliminar del Catálogo*</h1>
+    <h1 style="margin-top: 25px;margin-bottom: 25px;text-align: left;"> *Eliminar del Catálogo*</h1>
   {%else%}
-    <h1 style="margin-top: 15px;margin-bottom: 15px;text-align: center;"> *Editando Catálogo*</h1>
+    <h1 style="margin-top: 25px;margin-bottom: 25px;text-align: left;"> *Editando Catálogo*</h1>
 
   {%endif%}
-    
-    <!-- <div id="search_input">
-      <form method="get" class="search-box">  
-          <input type="text" class="form-control" placeholder="Buscar..." name="buscar" value="{{request.GET.buscar}}">
-         
-          <button class="btn btn-primary js-tooltip" type="submit">
-              <i class="material-icons">search</i>
-          </button>
-      </form>
-    </div> -->
-
-
+</div>
     
     {%load static%} 
      
     
-<div style="float: left; width: 100%;margin-top: 25px;  text-align: center;margin-bottom: 20px;">
+<div class="catalog-options"  style="float: left; margin-top: 25px; width: 250px; text-align: right;margin-bottom: 25px;">
       
         {% if user.is_authenticated %}
         {% if user.is_staff %}
-          <!-- <button style= "width: 100%;"class="btn btn-success js-tooltip" onclick="location.href='{% url 'upload_file' %}'">
-            <i class="material-icons">note_add</i> Añadir Lámina Virtual
-          </button> -->
 
-          <div class="button" onclick="location.href='{% url 'upload_file' %}'">
+          <div class="button" style="padding-top: 2px;" onclick="location.href='{% url 'upload_file' %}'">
             <i class="material-icons">note_add</i>
-            <!-- <div class="button-description">Agregar</div> -->
           </div>
           {%if delete_edit%}
-            <div class="button" onclick="location.href='/catalogo_edit/0'">
+            <div class="button" style="padding-top: 2px;" onclick="location.href='/catalogo_edit/0'">
               <i class="material-icons">edit</i>
             </div>
         
-            <div class="button" onclick="location.href='{% url 'Catalogo' %}'">
+            <div class="button" style="padding-top: 2px;" onclick="location.href='{% url 'Catalogo' %}'">
                 <i class="material-icons">check_circle</i>
             </div>
           {%else%}
             
-              <div class="button" onclick="location.href='{% url 'Catalogo' %}'">
+              <div class="button" style="padding-top: 2px;" onclick="location.href='{% url 'Catalogo' %}'">
               <i class="material-icons">check_circle</i>
               </div>
           
-              <div class="button" onclick="location.href='/catalogo_edit/1'">
+              <div class="button" style="padding-top: 2px;" onclick="location.href='/catalogo_edit/1'">
                   <i class="material-icons">delete</i>
               </div>
             
@@ -233,32 +65,42 @@
         {% endif %}
         {% endif %}
     </div>
-
-    
-    <div class="pagination" style="width: 100%; justify-content: center;">
-      <span class="step-links" >
+  </div>
+    <div style="width: 100%; text-align: center;">
+      <span class="current">
+          Página {{ catalogo.number }} de {{ catalogo.paginator.num_pages }}.
+      </span>
+  </div>  
+    <div class="pagination">
+      <span class="step-links">
           {% if catalogo.has_previous %}
-              <a href="?page=1">&laquo; Primera</a>
-              <a href="?page={{ catalogo.previous_page_number }}">anterior</a>
+              <a href="?page=1" onclick="savePage(1)">&laquo; </a>
+              <a href="?page={{ catalogo.previous_page_number }}" onclick="savePage({{ catalogo.previous_page_number }})">&lsaquo;</a>
+          {% else %}
+              <span class="hidden">&laquo; </span>
+              <span class="hidden">&lsaquo;</span>
           {% endif %}
-    
-          <span class="current">
-              Página {{ catalogo.number }} de {{ catalogo.paginator.num_pages }}.
-          </span>
-    
+          
+          {% for num in catalogo.paginator.page_range %}
+              {% if catalogo.number == num %}
+                  <span class="current">{{ num }}</span>
+              {% elif num > catalogo.number|add:'-3' and num < catalogo.number|add:'3' %}
+                  <a href="?page={{ num }}" onclick="savePage({{ num }})">{{ num }}</a>
+              {% elif num == catalogo.number|add:'-3' or num == catalogo.number|add:'3' %}
+                  <span class="ellipsis">...</span>
+              {% endif %} 
+          {% endfor %}
+  
           {% if catalogo.has_next %}
-              <a href="?page={{ catalogo.next_page_number }}">siguiente</a>
-              <a href="?page={{ catalogo.paginator.num_pages }}">Última &raquo;</a>
+              <a href="?page={{ catalogo.next_page_number }}" onclick="savePage({{ catalogo.next_page_number }})">&rsaquo;</a>
+              <a href="?page={{ catalogo.paginator.num_pages }}" onclick="savePage({{ catalogo.paginator.num_pages }})"> &raquo;</a>
+          {% else %}
+              <span class="hidden">&raquo; </span>
+              <span class="hidden">&rsaquo;</span>
           {% endif %}
       </span>
-    </div>  
-    <!-- <table class="product-table" >
-      <tr>
-        <th><h2>Nombre</h2></th>
-        <th><h2>Descripción</h2></th>
-        <th></th> 
-        <th></th>
-      </tr> -->
+  </div>
+    
     <div class="product-list">
       {%if delete_edit%}
         {%for slide in catalogo%}
@@ -290,7 +132,43 @@
     </div>
     
 
-    </ul>
+    <div style="width: 100%; text-align: center;">
+      <span class="current">
+          Página {{ catalogo.number }} de {{ catalogo.paginator.num_pages }}.
+      </span>
+  </div>  
+    <div class="pagination">
+      <span class="step-links">
+          {% if catalogo.has_previous %}
+              <a href="?page=1" onclick="savePage(1)">&laquo; </a>
+              <a href="?page={{ catalogo.previous_page_number }}" onclick="savePage({{ catalogo.previous_page_number }})">&lsaquo;</a>
+          {% else %}
+              <span class="hidden">&laquo; </span>
+              <span class="hidden">&lsaquo;</span>
+          {% endif %}
+          
+          {% for num in catalogo.paginator.page_range %}
+              {% if catalogo.number == num %}
+                  <span class="current">{{ num }}</span>
+              {% elif num > catalogo.number|add:'-3' and num < catalogo.number|add:'3' %}
+                  <a href="?page={{ num }}" onclick="savePage({{ num }})">{{ num }}</a>
+              {% elif num == catalogo.number|add:'-3' or num == catalogo.number|add:'3' %}
+                  <span class="ellipsis">...</span>
+              {% endif %} 
+          {% endfor %}
+  
+          {% if catalogo.has_next %}
+              <a href="?page={{ catalogo.next_page_number }}" onclick="savePage({{ catalogo.next_page_number }})">&rsaquo;</a>
+              <a href="?page={{ catalogo.paginator.num_pages }}" onclick="savePage({{ catalogo.paginator.num_pages }})"> &raquo;</a>
+          {% else %}
+              <span class="hidden">&raquo; </span>
+              <span class="hidden">&rsaquo;</span>
+          {% endif %}
+      </span>
+  </div>
+  <div style="float: left; width: 100%;margin-top: 25px;  text-align: center;margin-bottom: 20px;"></div>
+  
+</div>
 
   
 </div>

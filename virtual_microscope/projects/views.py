@@ -15,9 +15,15 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from .decorators import user_is_project_collaborator 
 from django.http import HttpResponse
+from django.utils import timezone
+import pytz
 
 
 HttpResponse
+
+def convert_to_user_timezone(dt, timezone_str):
+    user_timezone = pytz.timezone(timezone_str)
+    return dt.astimezone(user_timezone)
 
 class projects(generic.ListView,FormView,):
     template_name = "projects/projectList.html"
@@ -166,7 +172,7 @@ class projectDetail(generic.DetailView,FormView,DeleteView):
         
         pk = str(self.kwargs['pk'])
         queryset = request.GET.get('buscar')
-        ver = request.GET.get('ver')
+        # ver = request.GET.get('ver')
         numUser = 1
         for item in project.sharedUsers.all():
             numUser = numUser + 1
@@ -197,33 +203,34 @@ class projectDetail(generic.DetailView,FormView,DeleteView):
         if placaID:
             mySlide = Slide.objects.get(id=placaID)
             slideName = mySlide.name
-        if queryset:
-            palabras = queryset.split()
-            condiciones_busqueda = []
+        # if queryset:
+        #     palabras = queryset.split()
+        #     condiciones_busqueda = []
 
-            for palabra in palabras:
-                condicion = Q(name__icontains=palabra)
-                condicion2 = Q(description__icontains=palabra) 
-                condiciones_busqueda.append(condicion)
-                condiciones_busqueda.append(condicion2)
+        #     for palabra in palabras:
+        #         condicion = Q(name__icontains=palabra)
+        #         condicion2 = Q(description__icontains=palabra) 
+        #         condiciones_busqueda.append(condicion)
+        #         condiciones_busqueda.append(condicion2)
 
-            consulta = Q()
-            for condicion in condiciones_busqueda:
-                consulta |= condicion
+        #     consulta = Q()
+        #     for condicion in condiciones_busqueda:
+        #         consulta |= condicion
 
-            catalogo = Slide.objects.filter(consulta)
+        #     catalogo = Slide.objects.filter(consulta)
             
-        paginator = Paginator(catalogo,30)
+        paginator = Paginator(catalogo,12)
         user_id = request.user.id
-        if ver:
-            paginator = Paginator(catalogo,9)
+        # if ver:
+        #     paginator = Paginator(catalogo,9)
         
         page = request.GET.get('page')
         list = Project.objects.get(id = project.id)
         member = list.sharedUsers.all()
         
         catalogo = paginator.get_page(page)
-        return render(request,"projects/project.html",{'member':member,'user_id': user_id,'geojson_list':geojson_list,'catalogo':catalogo,'numPlacas':numPlacas,'numUser':numUser,'optionNum':optionNum,'mapSlide':mapSlide,'project':project,'ver':ver,'form':form,'form_b':form_b,'pk':pk,'placaId':placaID,'slideName':slideName,'plates':plates})
+        if not queryset:
+            return render(request,"projects/project.html",{'member':member,'user_id': user_id,'geojson_list':geojson_list,'catalogo':catalogo,'numPlacas':numPlacas,'numUser':numUser,'optionNum':optionNum,'mapSlide':mapSlide,'project':project,'form':form,'form_b':form_b,'pk':pk,'placaId':placaID,'slideName':slideName,'plates':plates})
     
     
     def post(self, request, *args, **kwargs):
@@ -236,17 +243,11 @@ class projectDetail(generic.DetailView,FormView,DeleteView):
             form = ProjectSlideForm(request.POST,instance=projec_slide_instance)
         elif(optionNum == 2):
             form = ProjectSlideForm(request.POST)
-        # print('jos')
         if form.is_valid():
             instancia = form.save(commit=False)
             instancia.project = object_instance
-            # instancia.placaId = request.POST.get('placaId')
             mySlide = Slide.objects.get(id=request.POST.get('slide'))
-            # mySlide = None
-            # # print(request.POST.get('slide', ''))
-            # for slide in mySlides:
-            #     mySlide = slide
-            # instancia.user = object_instance
+        
             instancia.slide = mySlide
             instancia.save()
 
@@ -601,49 +602,21 @@ def datos_actualizados_colaboradores(request,*args, **kwargs):
 
     return JsonResponse({'fullnameInvite':fullnameInvite,'nameInvite':nombresInvite,'fullname':fullname,'ownerN':ownerN,'idInvite':idListInvite,'ownerID':ownerID,'name':nombres,'id':idList}, safe=False)  
 
-def datos_actualizados_chat(request,*args, **kwargs):
-    queryset = kwargs.get('buscar', None)
-    itemsBuscar = None
-    meessages= None
-    messageDate = None
-    project= kwargs.get('project', None)
-    list = Message.objects.filter(project = project).order_by('fecha_envio')
+def datos_actualizados_chat(request, *args, **kwargs):
+    user_timezone = request.COOKIES.get('timezone', 'UTC')
+    project = kwargs.get('project', None)
+    messages = Message.objects.filter(project=project).order_by('fecha_envio')
 
-    # if queryset and not queryset == '_':
-    #     palabras = queryset.split()
-    #     condiciones_busqueda = []
+    name = [item.user.username for item in messages]
+    message = [item.contenido for item in messages]
+    date = [
+        (
+            convert_to_user_timezone(item.fecha_envio, user_timezone).strftime("%Y-%m-%d"),
+            convert_to_user_timezone(item.fecha_envio, user_timezone).strftime("%I:%M %p")
+        ) 
+        for item in messages
+    ]
 
-    #     for palabra in palabras:
-    #         condicion = Q(username__icontains=palabra)
-    #         # condicion2 = Q(description__icontains=palabra) 
-    #         condiciones_busqueda.append(condicion)
-    #         # condiciones_busqueda.append(condicion2)
+    userid = [item.user.id for item in messages]
 
-    #     consulta = Q()
-    #     for condicion in condiciones_busqueda:
-    #         consulta |= condicion
-    #     shared_user_ids = list.sharedUsers.values_list('id', flat=True)
-    #     invited_user_ids = list.invitedUsers.values_list('id', flat=True)
-        
-    #     # Construye la consulta para excluir usuarios por ID
-    #     exclude = Q(id__in=shared_user_ids) | Q(id=list.user.id) | Q(id__in=invited_user_ids)
-
-    #     # Filtra los usuarios basados en la consulta
-    #     itemsBuscar = User.objects.exclude(exclude).filter(consulta)
-        
-    #     paginator = Paginator(itemsBuscar,9)    
-    #     page = request.GET.get('page')
-    #     itemsBuscar= paginator.get_page(page)
-    #     nombres = [item.username for item in itemsBuscar]
-    #     idList = [item.id for item in itemsBuscar]
-    #     fullname = [str(item.first_name)+' '+str(item.last_name) for item in itemsBuscar]
-
-    
-    name = [item.user.username for item in list]
-    meessage = [item.contenido for item in list]
-    # date = [timezone.make_aware(item.fecha_envio).strftime("%I:%M %p") for item in list]
-    date = [(timezone.make_aware(item.fecha_envio).strftime("%Y-%m-%d"), timezone.make_aware(item.fecha_envio).strftime("%I:%M %p")) for item in list]
-
-    userid = [item.user.id for item in list]
-
-    return JsonResponse({'meessages':meessage,'name':name,'date':date,'userId':userid}, safe=False)  
+    return JsonResponse({'meessages': message, 'name': name, 'date': date, 'userId': userid}, safe=False)

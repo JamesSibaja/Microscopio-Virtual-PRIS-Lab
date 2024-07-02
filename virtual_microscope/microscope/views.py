@@ -27,6 +27,15 @@ UPLOAD_DIR = os.path.join(settings.MEDIA_ROOT, 'archivo')
 if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
 
+def format_duration(duration):
+    # La duración se espera que sea un objeto timedelta
+    if duration:
+        total_seconds = int(duration.total_seconds())
+        hours, remainder = divmod(total_seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        return f"{hours:02}:{minutes:02}:{seconds:02}"
+    return ''
+
 @csrf_exempt
 def upload_view(request):
     if request.method == 'POST':
@@ -34,7 +43,7 @@ def upload_view(request):
         file = request.FILES['archivo']
         chunk_index = int(request.POST['chunkIndex'])
         total_chunks = int(request.POST['totalChunks'])
-        file_name = request.POST['fileName']+ '_' + str(OpenSlide.objects.count())
+        file_name = str(OpenSlide.objects.count()) + '_' +  request.POST['fileName']
         name = request.POST['name']
 
         temp_file_path = os.path.join(UPLOAD_DIR, f'{file_name}.part{chunk_index}')
@@ -100,7 +109,6 @@ def task_status(request, task_id):
 
 def catalogo(request):
     queryset = request.GET.get('buscar')
-    # ver = request.GET.get('ver')
     catalogo = Slide.objects.filter( assembled=True)
     
     if queryset:
@@ -118,8 +126,6 @@ def catalogo(request):
             consulta |= condicion
 
         catalogo = Slide.objects.filter(consulta)
-        
-    # paginator = Paginator(catalogo,30)
 
     paginator = Paginator(catalogo,9)
     
@@ -181,7 +187,8 @@ def upload_file(request):
     listSlide = OpenSlide.objects.filter(assembled=False).distinct()
 
     if request.method == 'POST':
-        option = int(request.POST.get('option'))
+        # option = int(request.POST.get('option'))
+        
         form = SlideForm(request.POST, request.FILES)
         if form.is_valid():
             rawSlide = OpenSlide.objects.get(id=int(request.POST.get('slide')))
@@ -215,10 +222,11 @@ def activity_log(request):
     return render(request, 'microscope/activity_log.html', {'listSlide':listSlideError})
 
 def processing(request):
-    listSlide = Slide.objects.filter(assembled=False,error=False).distinct()
-    listSlideError = Slide.objects.filter(error=True).distinct()
+    listSlide = Slide.objects.filter(assembled=False).distinct()
+    # listSlideError = Slide.objects.filter(error=True).distinct()
 
-    return render(request, 'microscope/procesando.html', {'listSlide':listSlide,'listSlideError':listSlideError})
+    # return render(request, 'microscope/procesando.html', {'listSlide':listSlide,'listSlideError':listSlideError})
+    return render(request, 'microscope/procesando.html', {'listSlide':listSlide})
 
 def delete(request, slide_id):
     instancia = OpenSlide.objects.get(id=slide_id)
@@ -238,6 +246,8 @@ def reset_slide(request, slide_id):
         raw_slide = slide.raw_slide
         raw_slide.assembled = False
         raw_slide.save()
+        slide.raw_slide = None
+        slide.save()
     return JsonResponse({'success': True})
 
 def historial_detalles(request, id):
@@ -245,10 +255,11 @@ def historial_detalles(request, id):
     data = {
         'file_name': history_entry.file_name,
         'user': history_entry.user.username,
-        'status': history_entry.get_status_display(),
+        'status_display': history_entry.get_status_display(),
+        'status': history_entry.status,
         'start_time': history_entry.start_time.strftime('%Y-%m-%d %H:%M:%S') if history_entry.start_time else '',
         'end_time':         history_entry.end_time.strftime('%Y-%m-%d %H:%M:%S') if history_entry.end_time else '',
-        'duration': history_entry.duration,
+        'duration': format_duration(history_entry.duration) if history_entry.duration else 'N/A',
         'error_message': history_entry.error_message,
         'raw_slide': history_entry.raw_slide.name if history_entry.raw_slide else None
     }

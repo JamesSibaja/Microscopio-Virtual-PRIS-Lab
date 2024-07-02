@@ -289,17 +289,40 @@
     <div class="modal-contenido">
     <span class="cerrar cerrarModal" >&times;</span>
         <h2>Nueva Lámina Virtual</h2>
-    <form method="POST" > 
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input  type="hidden" name="option" value='0'>
-            <input id="slide" type="hidden" name="slide" value='0'>
-            <div style="position: relative; left: 2%;" class="botones">
-                <button type="submit" class="boton-enviar btn-primary">crear</button>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
             
-                <button type="button" class="boton-cerrar btn-danger cerrarModal" >Cancelar</button>
+            <div class="form-group">
+                {{ form.name.label_tag }}
+                {{ form.name }}
             </div>
-    </form>
+            
+            <div class="form-group">
+                {{ form.description.label_tag }}
+                {{ form.description }}
+            </div>
+            
+            <div class="form-check">
+                {{ form.auto_color }}
+                <label class="form-check-label" for="{{ form.auto_color.id_for_label }}">
+                    {{ form.auto_color.label }}
+                </label>
+            </div>
+            
+            <div class="form-group">
+                {{ form.color.label_tag }}
+                {{ form.color }}
+            </div>
+            
+            <input type="hidden" name="option" value="0">
+            <input id="slide" type="hidden" name="slide" value="0">
+            
+            <div style="position: relative; left: 2%;" class="botones">
+                <button type="submit" class="boton-enviar btn-primary">Crear</button>
+                <button type="button" class="boton-cerrar btn-danger cerrarModal">Cancelar</button>
+            </div>
+        </form>
+        
     </div>
 </div>
 <div id="miModal2" class="modal">

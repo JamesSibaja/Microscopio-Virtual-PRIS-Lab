@@ -13,6 +13,7 @@
     var host = "{{ request.get_host }}";
     var optionNum = "{{optionNum}}";
     var mapSlide = "{{mapSlide}}";
+    var optionMenu = 0;
     // var noteGeojson='{{ note.geojson_data}}';
     // var noteDraw = null;
     // if (noteGeojson!= 'None'){
@@ -73,22 +74,7 @@
           </div>   
       <!-- <h3 style="text-align: center;">Placas:</h3> -->
     </div>
-    <!-- <div id="datos_actualizados" style="box-shadow: 1px 1px 10px rgb(100, 99, 99);position: relative;left: 0%;top:2%;width:73%;height: 63%">
-      
-    </div>  -->
-    <div style="top:1%;position: relative; float: left;left:2%;padding: 2%; box-shadow: 1px 1px 3px rgb(100, 99, 99);border-radius:10px;background-color:rgb(255, 255, 255);width: 96%">
-                        
-                                
-        <div  style="display: flex; width:100%;">
-            <input style="display: inline-block;width: 90%" type="text" id ="buscarDato" class="form-control input-busqueda" placeholder="Buscar ..." name ="buscar" value="">
-            
-            <button id ="btn_buscar" class="btn btn-outline-dark  js-tooltip boton-busqueda">
-                <i class="material-icons">search</i>
-            </button>
-        </div>
-            
-            
-    </div>
+   
     <div style="float:left;height:1%;width:100%"></div> 
 <div id="datos_actualizados" style="position: relative; overflow-y: scroll;height: 68%; width: 100%;top:1%;">
     
@@ -161,22 +147,7 @@
                     </div>
                 </div>
             
-            <!-- <form method="POST" >
-                    
-                <div style="padding: 1%;width: 100%;height: 100%;">
-                    {% csrf_token %}
-                    {%if optionNum == 1%}
-                    <input id="slide" type="hidden" name="slide" value='{{mapSlide.slide.id}}'>
-                    {%else%}
-                    <input id="slide" type="hidden" name="slide" value='{{mapSlide.id}}'>
-                    {%endif%}
-                    {{ form.as_p }}
-                <div style="width: 100%;padding-left: 5%;padding-bottom: 5%;"> 
-                    <button class="btn btn-dark js-tooltip" type="submit">Guardar cambios</button>
-                  </div>    
-                </div>
-         
-            </form> -->
+  
         </div>
         <div  style="width: 17%;overflow-y: scroll;padding-top: 1%;height: 100%;position: relative;float: left;">
             
@@ -210,15 +181,6 @@
                 <hr > 
                 
                
-                <!-- <div style="position:relative;float: left;width: 50%;">
-                    <h3 style="text-align: center;">Placas Virtuales:<a style="color:blue;"> {{numPlacas}}</a> </h3>
-                </div> -->
-                <!-- <div style="position:relative;top:2%;width: 100%;">
-                    <hr> 
-                </div> -->
-                <!-- <div style="position:relative;top:2%;width: 100%;padding: 2%;">
-                    <h2>Creador del poryecto</h2>
-                </div> -->
                 <h4 style="text-align: center;">Datos del propietario</h4>
                 <div style="position:relative;float: left;width:100%;padding: 2%;">
                     <div class="titulo-y-botones" >
@@ -323,15 +285,6 @@
             </div>   
         {%endif%}
     
-<!-- <button class="btn btn-outline-dark btn-block js-tooltip" id="actualizar_btn">Seleccionar placa virtual {{placaId}} </button>  -->
-   
-   
-
-  
-<!-- <button style="position: relative;top: 10%;left: 30%;" class="btn btn-primary js-tooltip" type="submit" onclick="location.href='{% url 'Catalogo' %}'">Retroceder</button>
- 
-<input id="MyButton" style="position: relative;top: 10%;left: 30%;" class="btn btn-primary js-tooltip" type="button" value="SET" onclick="onMap();">
-     -->
     </div>
 
 {% endblock %}
