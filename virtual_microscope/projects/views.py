@@ -203,21 +203,21 @@ class projectDetail(generic.DetailView,FormView,DeleteView):
         if placaID:
             mySlide = Slide.objects.get(id=placaID)
             slideName = mySlide.name
-        # if queryset:
-        #     palabras = queryset.split()
-        #     condiciones_busqueda = []
+        if queryset:
+            palabras = queryset.split()
+            condiciones_busqueda = []
 
-        #     for palabra in palabras:
-        #         condicion = Q(name__icontains=palabra)
-        #         condicion2 = Q(description__icontains=palabra) 
-        #         condiciones_busqueda.append(condicion)
-        #         condiciones_busqueda.append(condicion2)
+            for palabra in palabras:
+                condicion = Q(name__icontains=palabra)
+                condicion2 = Q(description__icontains=palabra) 
+                condiciones_busqueda.append(condicion)
+                condiciones_busqueda.append(condicion2)
 
-        #     consulta = Q()
-        #     for condicion in condiciones_busqueda:
-        #         consulta |= condicion
+            consulta = Q()
+            for condicion in condiciones_busqueda:
+                consulta |= condicion
 
-        #     catalogo = Slide.objects.filter(consulta)
+            catalogo = Slide.objects.filter(consulta)
             
         paginator = Paginator(catalogo,12)
         user_id = request.user.id
@@ -229,8 +229,7 @@ class projectDetail(generic.DetailView,FormView,DeleteView):
         member = list.sharedUsers.all()
         
         catalogo = paginator.get_page(page)
-        if not queryset:
-            return render(request,"projects/project.html",{'member':member,'user_id': user_id,'geojson_list':geojson_list,'catalogo':catalogo,'numPlacas':numPlacas,'numUser':numUser,'optionNum':optionNum,'mapSlide':mapSlide,'project':project,'form':form,'form_b':form_b,'pk':pk,'placaId':placaID,'slideName':slideName,'plates':plates})
+        return render(request,"projects/project.html",{'member':member,'user_id': user_id,'geojson_list':geojson_list,'catalogo':catalogo,'numPlacas':numPlacas,'numUser':numUser,'optionNum':optionNum,'mapSlide':mapSlide,'project':project,'form':form,'form_b':form_b,'pk':pk,'placaId':placaID,'slideName':slideName,'plates':plates})
     
     
     def post(self, request, *args, **kwargs):
