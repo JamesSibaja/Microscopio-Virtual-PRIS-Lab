@@ -5,7 +5,9 @@ $(document).ready(function() {
     // var project = "{{ project.id }}";
     // optionMenu = optionNum;
     // document.getElementById("slide").value = 1; 
-    var abrirModal = document.getElementById('abrirModal');
+    if(mapSlide!='None'){
+        var abrirModal = document.getElementById('abrirModal');
+    }
     var modal = document.getElementById('miModal');
     var cerrarModal = document.getElementById('cerrarModal');
     var chatInput = document.getElementById('chatInput');
@@ -274,31 +276,22 @@ $(document).ready(function() {
         menuList.style.display = "none";
     });
 
-    $('#btn_buscar').on('click', function() {
-        if(optionMenu<2){
-            buscarInfo= document.getElementById("buscarDato").value;
-            
-            // document.getElementById("buscarDato").value = '';
-            actualizarDatos('/datos_actualizados_placas/'+project+'/'+buscarInfo,'placas');
-        }
-        if(optionMenu==2){
-            
-            buscarInfo= document.getElementById("buscarDato").value;
-            // document.getElementById("buscarDato").value = '';
-            actualizarDatos('/datos_actualizados_catalogo/'+project+'/'+buscarInfo,'catalogo');
-        }
-        if(optionMenu==3){
-            buscarInfo= document.getElementById("buscarDato").value;
-
-            // document.getElementById("buscarDato").value = '';
-            actualizarDatos('/datos_actualizados_colaboradores/'+project+'/'+buscarInfo,'colaboradores');
-        }
-        if(optionMenu==4){
-            buscarInfo= document.getElementById("buscarDato").value;
-
-            // document.getElementById("buscarDato").value = '';
-            actualizarDatos('/datos_actualizados_chat/'+project+'/'+buscarInfo,'chat');
-        }
+    $(document).ready(function() {
+        $('#searchForm').on('submit', function(event) {
+            event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+    
+            let buscarInfo = $('#buscarDato').val();
+    
+            if (optionMenu < 2) {
+                actualizarDatos('/datos_actualizados_placas/' + project + '/' + buscarInfo, 'placas');
+            } else if (optionMenu == 2) {
+                actualizarDatos('/datos_actualizados_catalogo/' + project + '/' + buscarInfo, 'catalogo');
+            } else if (optionMenu == 3) {
+                actualizarDatos('/datos_actualizados_colaboradores/' + project + '/' + buscarInfo, 'colaboradores');
+            } else if (optionMenu == 4) {
+                actualizarDatos('/datos_actualizados_chat/' + project + '/' + buscarInfo, 'chat');
+            }
+        });
     });
   
 
@@ -370,6 +363,9 @@ $(document).ready(function() {
                 }).addTo(map);
             }
         }
+        abrirModal.addEventListener('click', function() {
+            modal.style.display = 'block';
+        });
     }
     const chatSocket = new WebSocket(
     "ws://"+host+":80/ws/projects/"+project+"/"
@@ -471,10 +467,7 @@ $(document).ready(function() {
         messageInput.value = '';
     });
 
-    
-    abrirModal.addEventListener('click', function() {
-        modal.style.display = 'block';
-    });
+   
 
     cerrarModal.addEventListener('click', function() {
         modal.style.display = 'none';

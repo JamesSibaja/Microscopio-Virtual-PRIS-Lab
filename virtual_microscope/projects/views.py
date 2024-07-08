@@ -219,16 +219,16 @@ class projectDetail(generic.DetailView,FormView,DeleteView):
 
             catalogo = Slide.objects.filter(consulta)
             
-        paginator = Paginator(catalogo,12)
+        # paginator = Paginator(catalogo,12)
         user_id = request.user.id
         # if ver:
         #     paginator = Paginator(catalogo,9)
         
-        page = request.GET.get('page')
+        # page = request.GET.get('page')
         list = Project.objects.get(id = project.id)
         member = list.sharedUsers.all()
         
-        catalogo = paginator.get_page(page)
+        # catalogo = paginator.get_page(page)
         return render(request,"projects/project.html",{'member':member,'user_id': user_id,'geojson_list':geojson_list,'catalogo':catalogo,'numPlacas':numPlacas,'numUser':numUser,'optionNum':optionNum,'mapSlide':mapSlide,'project':project,'form':form,'form_b':form_b,'pk':pk,'placaId':placaID,'slideName':slideName,'plates':plates})
     
     
@@ -501,12 +501,12 @@ def datos_actualizados_catalogo(request,*args, **kwargs):
 
         items = Slide.objects.filter(consulta)
         
-    paginator = Paginator(items,9)
+    # paginator = Paginator(items,9)
     
-    page = request.GET.get('page')
+    # page = request.GET.get('page')
         
         
-    items= paginator.get_page(page)
+    # items= paginator.get_page(page)
     
     nombres = [item.name for item in items]
     idList = [item.id for item in items]
@@ -540,12 +540,12 @@ def datos_actualizados_placas(request,*args, **kwargs):
 
         items =  ProjectSlide.objects.filter(consulta)
         
-    paginator = Paginator(items,9)
+    # paginator = Paginator(items,9)
     
-    page = request.GET.get('page')
+    # page = request.GET.get('page')
         
         
-    items= paginator.get_page(page)
+    # items= paginator.get_page(page)
     nombres = [item.name for item in items]
     idList = [item.id for item in items]
     
@@ -584,9 +584,9 @@ def datos_actualizados_colaboradores(request,*args, **kwargs):
         # Filtra los usuarios basados en la consulta
         itemsBuscar = User.objects.exclude(exclude).filter(consulta)
         
-        paginator = Paginator(itemsBuscar,9)    
-        page = request.GET.get('page')
-        itemsBuscar= paginator.get_page(page)
+        # paginator = Paginator(itemsBuscar,9)    
+        # page = request.GET.get('page')
+        # itemsBuscar= paginator.get_page(page)
         nombres = [item.username for item in itemsBuscar]
         idList = [item.id for item in itemsBuscar]
         fullname = [str(item.first_name)+' '+str(item.last_name) for item in itemsBuscar]

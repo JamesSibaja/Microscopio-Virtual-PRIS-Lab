@@ -15,13 +15,13 @@ Para desplegar esta plataforma en tu servidor local, asegúrate de tener instala
 Para comenzar, clona este repositorio utilizando el siguiente comando:
 
 ```bash
-git clone https://github.com/JamesSibaja/Microscopio-Virtual-PRIS-Lab-B77342.git
+git clone https://github.com/JamesSibaja/Microscopio-Virtual-PRIS-Lab.git
 ```
 
 Luego, dirígete al directorio principal del repositorio:
 
 ```bash
-cd Microscopio-Virtual-PRIS-Lab-B77342
+cd Microscopio-Virtual-PRIS-Lab
 ```
 
 ## Despliegue en servidor local
