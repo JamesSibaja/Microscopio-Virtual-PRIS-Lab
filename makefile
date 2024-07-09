@@ -22,6 +22,12 @@ run:
 		docker compose exec gunicorn_vm python manage.py collectstatic --noinput; \
 	fi
 
+debug:
+	docker compose up --no-build --no-recreate redis_vm db_vm gunicorn_vm daphne_vm celery_vm nginx_vm
+	if [ "$$MODE" = "production" ]; then \
+		docker compose exec gunicorn_vm python manage.py collectstatic --noinput; \
+	fi
+
 migration:
 	docker compose up --no-build --no-recreate -d redis_vm db_vm gunicorn_vm daphne_vm celery_vm nginx_vm
 	docker compose exec gunicorn_vm python manage.py makemigrations

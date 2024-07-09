@@ -32,4 +32,5 @@ Thumbs.db
 
 # Ignora archivos locales de configuración
 local_settings.py
-
+*/nginx.conf
+*/settings.py

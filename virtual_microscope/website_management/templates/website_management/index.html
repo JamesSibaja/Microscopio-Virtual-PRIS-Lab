@@ -87,7 +87,7 @@
         .carousel img {
             width: 100%;
             height: 50vh; /* Ocupa toda la altura de la vista */
-            /* object-fit: cover;  */
+            object-fit: cover; 
         }
 
         .carousel-btn {
@@ -150,6 +150,8 @@
                     <img src="{% static 'slide1.png' %}" alt="Slide 1">
                     <img src="{% static 'slide2.png' %}" alt="Slide 2">
                     <img src="{% static 'slide3.png' %}" alt="Slide 3">
+                    <img src="{% static 'slide4.png' %}" alt="Slide 4">
+                    <img src="{% static 'slide5.png' %}" alt="Slide 5">
                 </div>
                 <button class="carousel-btn right" onclick="plusSlides(1)">&#10095;</button>
             </div>
@@ -177,32 +179,32 @@
 
 <script>
    let slideIndex = 0;
-showSlides();
-
-function plusSlides(n) {
-    slideIndex += n;
     showSlides();
-}
 
-function showSlides() {
-    let slides = document.querySelectorAll('.carousel img');
-    if (slideIndex >= slides.length) {
-        slideIndex = 0;
+    function plusSlides(n) {
+        slideIndex += n;
+        showSlides();
     }
-    if (slideIndex < 0) {
-        slideIndex = slides.length - 1;
-    }
-    const offset = -slideIndex * 33.33;
-    document.querySelector('.carousel').style.transform = `translateX(${offset}%)`;
-    document.querySelector('.carousel').style.width = `${slides.length * 100}%`; // Asegura que el ancho del contenedor del carrusel es correcto
-    slides.forEach(slide => {
-        slide.style.width = `${100 / slides.length}%`; // Asegura que cada imagen ocupa el 100% del contenedor visible
-    });
-}
 
-setInterval(() => {
-    plusSlides(1);
-}, 3000);
+    function showSlides() {
+        let slides = document.querySelectorAll('.carousel img');
+        if (slideIndex >= slides.length) {
+            slideIndex = 0;
+        }
+        if (slideIndex < 0) {
+            slideIndex = slides.length - 1;
+        }
+        const offset = -slideIndex * 20;
+        document.querySelector('.carousel').style.transform = `translateX(${offset}%)`;
+        document.querySelector('.carousel').style.width = `${slides.length * 100}%`; // Asegura que el ancho del contenedor del carrusel es correcto
+        slides.forEach(slide => {
+            slide.style.width = `${100 / slides.length}%`; // Asegura que cada imagen ocupa el 100% del contenedor visible
+        });
+    }
+
+    setInterval(() => {
+        plusSlides(1);
+    }, 5000);
 
 
 </script>

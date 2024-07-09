@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django_extensions',
+    'colorfield',
     'channels',
     'daphne',
     'django.contrib.staticfiles',
