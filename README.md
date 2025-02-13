@@ -43,3 +43,5 @@ sudo make setup
 ## Información adicional
 
 Este sistema ha sido probado en Ubuntu 23.04.
+Ver archivo "demo" de este repositorio para más detalles del funcionamiento
+Ver archivo "Bitácora_James_Sibaja_B77342" de este repositorio para más detalles del desrrollo
